@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오키뷰티 | 통합 매출/재고 현황 대시보드</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: #f1f5f9; color: #1e293b; }
+
+  /* HEADER */
+  .header { background: #0f172a; color: #fff; padding: 18px 28px; display: flex; justify-content: space-between; align-items: center; }
+  .header-left h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .header-left p { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .sync-badge { display: flex; align-items: center; gap: 6px; background: #1e293b; border-radius: 20px; padding: 5px 12px; font-size: 12px; color: #4ade80; }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .last-update { font-size: 12px; color: #94a3b8; }
+
+  /* KPI CARDS */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 20px 28px 0; }
+  .kpi-card { background: #fff; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid #3b82f6; }
+  .kpi-card.warning { border-left-color: #f59e0b; }
+  .kpi-card.danger { border-left-color: #ef4444; }
+  .kpi-card.green { border-left-color: #10b981; }
+  .kpi-label { font-size: 12px; color: #64748b; margin-bottom: 6px; }
+  .kpi-value { font-size: 26px; font-weight: 700; color: #0f172a; line-height: 1; }
+  .kpi-sub { font-size: 11px; color: #94a3b8; margin-top: 5px; }
+  .kpi-badge { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: 600; margin-top: 5px; }
+  .badge-up { background: #dcfce7; color: #16a34a; }
+  .badge-down { background: #fee2e2; color: #dc2626; }
+
+  /* FILTERS */
+  .filter-bar { display: flex; align-items: center; gap: 10px; padding: 16px 28px; background: #fff; margin: 16px 28px 0; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); flex-wrap: wrap; }
+  .filter-label { font-size: 12px; color: #64748b; font-weight: 600; }
+  .tab-btn { padding: 6px 14px; border-radius: 6px; border: 1.5px solid #e2e8f0; background: #fff; font-size: 13px; cursor: pointer; color: #475569; transition: all 0.15s; font-family: inherit; }
+  .tab-btn.active { background: #0f172a; color: #fff; border-color: #0f172a; }
+  .tab-btn:hover:not(.active) { border-color: #94a3b8; background: #f8fafc; }
+  .search-box { margin-left: auto; padding: 6px 12px; border: 1.5px solid #e2e8f0; border-radius: 6px; font-size: 13px; font-family: inherit; outline: none; width: 180px; }
+  .search-box:focus { border-color: #3b82f6; }
+
+  /* ALERT BANNER */
+  .alert-banner { margin: 12px 28px 0; background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 10px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+  .alert-icon { font-size: 16px; }
+  .alert-text { font-size: 13px; color: #991b1b; font-weight: 600; }
+  .alert-sub { font-size: 12px; color: #b91c1c; margin-left: 4px; font-weight: 400; }
+
+  /* TABLE */
+  .table-wrap { margin: 14px 28px 28px; background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); overflow: hidden; }
+  .table-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid #f1f5f9; }
+  .table-title { font-size: 14px; font-weight: 700; color: #0f172a; }
+  .table-meta { font-size: 12px; color: #94a3b8; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #f8fafc; font-size: 12px; color: #64748b; font-weight: 600; padding: 10px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; white-space: nowrap; cursor: pointer; }
+  thead th:hover { background: #f1f5f9; }
+  thead th .sort-icon { margin-left: 4px; color: #cbd5e1; }
+  tbody tr { border-bottom: 1px solid #f1f5f9; transition: background 0.1s; }
+  tbody tr:hover { background: #f8fafc; }
+  tbody td { padding: 11px 16px; font-size: 13px; color: #334155; }
+  .sku-name { font-weight: 600; color: #0f172a; }
+  .channel-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+  .ch-jasa { background: #ede9fe; color: #6d28d9; }
+  .ch-smart { background: #dbeafe; color: #1d4ed8; }
+  .ch-coupang { background: #fee2e2; color: #dc2626; }
+  .ch-offline { background: #dcfce7; color: #15803d; }
+  .stock-bar-wrap { width: 80px; height: 8px; background: #e2e8f0; border-radius: 4px; display: inline-block; vertical-align: middle; margin-right: 8px; }
+  .stock-bar { height: 100%; border-radius: 4px; }
+  .bar-ok { background: #10b981; }
+  .bar-warn { background: #f59e0b; }
+  .bar-danger { background: #ef4444; }
+  .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 9px; border-radius: 10px; font-weight: 700; }
+  .status-ok { background: #dcfce7; color: #15803d; }
+  .status-warn { background: #fef9c3; color: #a16207; }
+  .status-danger { background: #fee2e2; color: #dc2626; animation: blink 1.2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* ROI MINI */
+  .trend { font-size: 11px; font-weight: 600; }
+  .trend.up { color: #16a34a; }
+  .trend.down { color: #dc2626; }
+
+  /* FOOTER */
+  .footer { text-align: center; padding: 10px; font-size: 11px; color: #cbd5e1; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>오키뷰티 (OKEE BEAUTY) · 통합 매출/재고 현황</h1>
+    <p>판매채널 통합 대시보드 | A-1. 실시간 SKU별 재고 모니터링</p>
+  </div>
+  <div class="header-right">
+    <div class="sync-badge">
+      <div class="sync-dot"></div>
+      LIVE 동기화 중
+    </div>
+    <div class="last-update">업데이트: <span id="updateTime"></span></div>
+  </div>
+</div>
+
+<!-- KPI CARDS -->
+<div class="kpi-row">
+  <div class="kpi-card green">
+    <div class="kpi-label">이번 주 총 매출</div>
+    <div class="kpi-value">₩12.4M</div>
+    <div class="kpi-sub">전주 대비 <span class="trend up">▲ 8.3%</span></div>
+    <span class="kpi-badge badge-up">목표 달성 중</span>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">전체 SKU 재고 현황</div>
+    <div class="kpi-value">8 / 12</div>
+    <div class="kpi-sub">정상 재고 SKU 수</div>
+    <span class="kpi-badge badge-up">8 정상</span>
+  </div>
+  <div class="kpi-card warning">
+    <div class="kpi-label">재고 주의 SKU</div>
+    <div class="kpi-value">3개</div>
+    <div class="kpi-sub">7일 내 소진 예상</div>
+    <span class="kpi-badge" style="background:#fef3c7;color:#d97706;">⚠ 발주 검토 필요</span>
+  </div>
+  <div class="kpi-card danger">
+    <div class="kpi-label">🚨 품절 위험 SKU</div>
+    <div class="kpi-value">1개</div>
+    <div class="kpi-sub">3일 내 소진 예상</div>
+    <span class="kpi-badge badge-down">즉시 발주 필요</span>
+  </div>
+</div>
+
+<!-- ALERT BANNER -->
+<div class="alert-banner">
+  <span class="alert-icon">🚨</span>
+  <span class="alert-text">[품절 알럿] OKEE 수분크림 50ml (쿠팡)</span>
+  <span class="alert-sub">현재 재고 12개 · 일 평균 판매 5개 → 예상 소진일: 2.4일 이내 · 즉시 발주 권장</span>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">채널 필터</span>
+  <button class="tab-btn active" onclick="filterChannel('all', this)">전체</button>
+  <button class="tab-btn" onclick="filterChannel('자사몰', this)">자사몰</button>
+  <button class="tab-btn" onclick="filterChannel('스마트스토어', this)">스마트스토어</button>
+  <button class="tab-btn" onclick="filterChannel('쿠팡', this)">쿠팡</button>
+  <button class="tab-btn" onclick="filterChannel('오프라인', this)">오프라인</button>
+  <input class="search-box" type="text" placeholder="🔍  SKU 검색..." oninput="searchSKU(this.value)">
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <div class="table-header">
+    <span class="table-title">SKU별 매출 · 재고 현황</span>
+    <span class="table-meta" id="rowCount">12개 SKU · 전체 채널</span>
+  </div>
+  <table id="skuTable">
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">SKU명 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable(1)">채널 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable(2)">이번 주 매출 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable(3)">현재고 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable(4)">일 평균 판매 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable(5)">예상 소진일 <span class="sort-icon">⇅</span></th>
+        <th>재고 잔량</th>
+        <th onclick="sortTable(7)">상태 <span class="sort-icon">⇅</span></th>
+      </tr>
+    </thead>
+    <tbody id="skuTbody">
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">OKEE BEAUTY · 통합 운영 대시보드 | GLO:UP AI 운영 진단 — 데모 시각화</div>
+
+<script>
+const data = [
+  { sku: 'OKEE 수분크림 50ml', channel: '쿠팡', sales: 3840000, stock: 12, dailySales: 5.1, status: 'danger' },
+  { sku: 'OKEE 수분크림 50ml', channel: '자사몰', sales: 2100000, stock: 48, dailySales: 4.2, status: 'ok' },
+  { sku: 'OKEE 세럼 앰플 30ml', channel: '스마트스토어', sales: 1980000, stock: 31, dailySales: 3.8, status: 'ok' },
+  { sku: 'OKEE 세럼 앰플 30ml', channel: '쿠팡', sales: 1540000, stock: 22, dailySales: 4.5, status: 'warn' },
+  { sku: 'OKEE 클렌징 폼 150ml', channel: '자사몰', sales: 960000, stock: 88, dailySales: 2.1, status: 'ok' },
+  { sku: 'OKEE 클렌징 폼 150ml', channel: '오프라인', sales: 720000, stock: 60, dailySales: 1.8, status: 'ok' },
+  { sku: 'OKEE 토너 패드 60매', channel: '스마트스토어', sales: 1340000, stock: 19, dailySales: 3.6, status: 'warn' },
+  { sku: 'OKEE 토너 패드 60매', channel: '쿠팡', sales: 880000, stock: 55, dailySales: 2.0, status: 'ok' },
+  { sku: 'OKEE 선크림 SPF50+', channel: '자사몰', sales: 2460000, stock: 14, dailySales: 5.5, status: 'warn' },
+  { sku: 'OKEE 선크림 SPF50+', channel: '스마트스토어', sales: 1760000, stock: 72, dailySales: 3.1, status: 'ok' },
+  { sku: 'OKEE 마스크팩 5매입', channel: '쿠팡', sales: 560000, stock: 120, dailySales: 1.5, status: 'ok' },
+  { sku: 'OKEE 마스크팩 5매입', channel: '오프라인', sales: 380000, stock: 95, dailySales: 1.2, status: 'ok' },
+];
+
+let currentFilter = 'all';
+let currentSearch = '';
+
+function formatKRW(n) {
+  if (n >= 1000000) return '₩' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '₩' + (n/1000).toFixed(0) + 'K';
+  return '₩' + n;
+}
+
+function getChannelBadge(ch) {
+  const map = { '자사몰': 'ch-jasa', '스마트스토어': 'ch-smart', '쿠팡': 'ch-coupang', '오프라인': 'ch-offline' };
+  return `<span class="channel-badge ${map[ch] || ''}">${ch}</span>`;
+}
+
+function getStatusBadge(s, daysLeft) {
+  if (s === 'danger') return `<span class="status-badge status-danger"><span class="status-dot"></span>🚨 품절 위험 (${daysLeft.toFixed(1)}일)</span>`;
+  if (s === 'warn') return `<span class="status-badge status-warn"><span class="status-dot"></span>⚠ 재고 주의 (${daysLeft.toFixed(0)}일)</span>`;
+  return `<span class="status-badge status-ok"><span class="status-dot"></span>정상</span>`;
+}
+
+function getBar(stock, daily) {
+  const days = stock / daily;
+  const pct = Math.min(100, (days / 30) * 100);
+  const cls = days <= 3 ? 'bar-danger' : days <= 7 ? 'bar-warn' : 'bar-ok';
+  return `<div class="stock-bar-wrap"><div class="stock-bar ${cls}" style="width:${pct}%"></div></div>${stock}개`;
+}
+
+function renderTable() {
+  const tbody = document.getElementById('skuTbody');
+  const filtered = data.filter(d => {
+    const chanOk = currentFilter === 'all' || d.channel === currentFilter;
+    const searchOk = currentSearch === '' || d.sku.includes(currentSearch);
+    return chanOk && searchOk;
+  });
+  document.getElementById('rowCount').textContent = `${filtered.length}개 SKU · ${currentFilter === 'all' ? '전체 채널' : currentFilter}`;
+  tbody.innerHTML = filtered.map(d => {
+    const days = d.stock / d.dailySales;
+    return `<tr>
+      <td class="sku-name">${d.sku}</td>
+      <td>${getChannelBadge(d.channel)}</td>
+      <td><strong>${formatKRW(d.sales)}</strong></td>
+      <td>${d.stock}개</td>
+      <td>${d.dailySales}개/일</td>
+      <td style="color:${days<=3?'#dc2626':days<=7?'#d97706':'#475569'};font-weight:${days<=7?'700':'400'}">${days.toFixed(1)}일</td>
+      <td>${getBar(d.stock, d.dailySales)}</td>
+      <td>${getStatusBadge(d.status, days)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterChannel(ch, btn) {
+  currentFilter = ch;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function searchSKU(val) {
+  currentSearch = val;
+  renderTable();
+}
+
+function updateTime() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('updateTime').textContent = `${h}:${m}:${s}`;
+}
+
+function sortTable(col) {
+  // simple sort by column index
+  const cols = ['sku','channel','sales','stock','dailySales','daysLeft'];
+  // just toggle for demo
+  renderTable();
+}
+
+updateTime();
+setInterval(updateTime, 1000);
+renderTable();
+</script>
+</body>
+</html>

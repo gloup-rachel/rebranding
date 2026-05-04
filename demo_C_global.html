@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오키뷰티 | 글로벌 확장 대시보드</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: #f1f5f9; color: #1e293b; }
+
+  .header { background: #0f172a; color: #fff; padding: 18px 28px; display: flex; justify-content: space-between; align-items: center; }
+  .header-left h1 { font-size: 18px; font-weight: 700; }
+  .header-left p { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .live-badge { display: flex; align-items: center; gap: 5px; background: #1e293b; border-radius: 20px; padding: 5px 12px; font-size: 12px; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .dot-green { background: #4ade80; color: #4ade80; }
+  .dot-yellow { background: #fbbf24; color: #fbbf24; }
+  .dot-gray { background: #94a3b8; color: #94a3b8; }
+
+  /* MARKET TABS */
+  .tab-bar { background: #fff; padding: 0 28px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 0; overflow-x: auto; }
+  .market-tab { display: flex; align-items: center; gap: 8px; padding: 14px 20px; border-bottom: 3px solid transparent; cursor: pointer; font-size: 14px; color: #64748b; font-weight: 500; white-space: nowrap; transition: all 0.15s; }
+  .market-tab:hover { color: #0f172a; }
+  .market-tab.active { color: #0f172a; font-weight: 700; border-bottom-color: #3b82f6; }
+  .market-tab .flag { font-size: 20px; }
+  .market-tab .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .status-live { background: #4ade80; }
+  .status-expand { background: #fbbf24; }
+  .status-planned { background: #94a3b8; }
+  .tab-tag { font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 700; }
+  .tag-live { background: #dcfce7; color: #15803d; }
+  .tag-expand { background: #fef9c3; color: #a16207; }
+  .tag-planned { background: #f1f5f9; color: #64748b; }
+
+  /* KPI ROW */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 20px 28px 0; }
+  .kpi-card { background: #fff; border-radius: 10px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+  .kpi-label { font-size: 12px; color: #64748b; margin-bottom: 6px; }
+  .kpi-value { font-size: 24px; font-weight: 800; color: #0f172a; }
+  .kpi-sub { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+  .kpi-badge { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 8px; font-weight: 600; margin-top: 5px; }
+  .badge-green { background: #dcfce7; color: #15803d; }
+  .badge-yellow { background: #fef9c3; color: #a16207; }
+  .badge-gray { background: #f1f5f9; color: #64748b; }
+
+  /* MAIN CONTENT */
+  .content { padding: 16px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .full { grid-column: 1/-1; }
+
+  .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); overflow: hidden; }
+  .card-header { padding: 13px 18px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+  .card-title { font-size: 14px; font-weight: 700; }
+  .card-meta { font-size: 12px; color: #94a3b8; }
+  .card-body { padding: 16px 18px; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #f8fafc; font-size: 12px; color: #64748b; font-weight: 600; padding: 9px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+  tbody tr { border-bottom: 1px solid #f1f5f9; }
+  tbody tr:hover { background: #f8fafc; }
+  tbody td { padding: 10px 14px; font-size: 13px; color: #334155; }
+  .ch-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+
+  /* CHANNEL GRID */
+  .ch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ch-item { background: #f8fafc; border-radius: 8px; padding: 12px 14px; border: 1px solid #e2e8f0; }
+  .ch-name { font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+  .ch-val { font-size: 18px; font-weight: 800; color: #0f172a; }
+  .ch-note { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+
+  /* ROADMAP */
+  .roadmap-row { display: flex; gap: 12px; }
+  .roadmap-item { flex: 1; padding: 12px 14px; border-radius: 8px; }
+  .rm-q1 { background: #eff6ff; border: 1.5px solid #93c5fd; }
+  .rm-q2 { background: #f0fdf4; border: 1.5px solid #86efac; }
+  .rm-q3 { background: #fffbeb; border: 1.5px solid #fde68a; }
+  .rm-q4 { background: #f5f3ff; border: 1.5px solid #c4b5fd; }
+  .rm-label { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
+  .rm-q1 .rm-label { color: #1d4ed8; }
+  .rm-q2 .rm-label { color: #15803d; }
+  .rm-q3 .rm-label { color: #a16207; }
+  .rm-q4 .rm-label { color: #6d28d9; }
+  .rm-item { font-size: 11px; color: #334155; margin-top: 3px; }
+
+  /* ALERT */
+  .expand-alert { margin: 0 28px 16px; background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 10px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+  .expand-text { font-size: 13px; color: #92400e; font-weight: 600; }
+  .expand-sub { font-size: 12px; color: #a16207; margin-left: 4px; }
+
+  /* COMING SOON */
+  .coming-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; color: #94a3b8; }
+  .cs-icon { font-size: 48px; margin-bottom: 12px; }
+  .cs-title { font-size: 16px; font-weight: 700; color: #475569; margin-bottom: 6px; }
+  .cs-sub { font-size: 13px; }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>오키뷰티 (OKEE BEAUTY) · 글로벌 확장 대시보드</h1>
+    <p>국가별 판매 현황 · 채널 현황 · 확장 로드맵 | C. 글로벌 탭 뷰</p>
+  </div>
+  <div class="header-right">
+    <div class="live-badge dot-green">
+      <div class="live-dot dot-green"></div>
+      <span style="color:#4ade80;">국내 LIVE</span>
+    </div>
+    <div class="live-badge dot-yellow">
+      <div class="live-dot dot-yellow"></div>
+      <span style="color:#fbbf24;">일본 준비 중</span>
+    </div>
+  </div>
+</div>
+
+<!-- MARKET TABS -->
+<div class="tab-bar">
+  <div class="market-tab active" onclick="switchTab('kr', this)">
+    <span class="flag">🇰🇷</span>
+    <span>국내</span>
+    <div class="status-dot status-live"></div>
+    <span class="tab-tag tag-live">운영 중</span>
+  </div>
+  <div class="market-tab" onclick="switchTab('jp', this)">
+    <span class="flag">🇯🇵</span>
+    <span>일본</span>
+    <div class="status-dot status-expand"></div>
+    <span class="tab-tag tag-expand">Q3 런칭 예정</span>
+  </div>
+  <div class="market-tab" onclick="switchTab('us', this)">
+    <span class="flag">🇺🇸</span>
+    <span>미국</span>
+    <div class="status-dot status-planned"></div>
+    <span class="tab-tag tag-planned">검토 중</span>
+  </div>
+  <div class="market-tab" onclick="switchTab('th', this)">
+    <span class="flag">🇹🇭</span>
+    <span>태국</span>
+    <div class="status-dot status-planned"></div>
+    <span class="tab-tag tag-planned">검토 중</span>
+  </div>
+</div>
+
+<!-- ====== 국내 탭 ====== -->
+<div id="tab-kr">
+  <div class="kpi-row">
+    <div class="kpi-card" style="border-left:4px solid #3b82f6;">
+      <div class="kpi-label">이번 달 총 매출</div>
+      <div class="kpi-value">₩42.0M</div>
+      <div class="kpi-sub">전월 대비 +12.4%</div>
+      <span class="kpi-badge badge-green">▲ 성장 중</span>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #10b981;">
+      <div class="kpi-label">활성 채널 수</div>
+      <div class="kpi-value">4개</div>
+      <div class="kpi-sub">자사몰 / SS / 쿠팡 / 오프라인</div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #f59e0b;">
+      <div class="kpi-label">채널별 최고 ROI</div>
+      <div class="kpi-value">5.1x</div>
+      <div class="kpi-sub">네이버 검색광고</div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #8b5cf6;">
+      <div class="kpi-label">월 광고비</div>
+      <div class="kpi-value">₩7.1M</div>
+      <div class="kpi-sub">매출 대비 16.9%</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📦 채널별 매출 현황</span>
+        <span class="card-meta">이번 달 기준</span>
+      </div>
+      <div class="card-body">
+        <div class="ch-grid">
+          <div class="ch-item">
+            <div class="ch-name">🏠 자사몰</div>
+            <div class="ch-val">₩10.8M</div>
+            <div class="ch-note">전월 +18% · 회원 1,240명</div>
+          </div>
+          <div class="ch-item">
+            <div class="ch-name">🟢 스마트스토어</div>
+            <div class="ch-val">₩13.2M</div>
+            <div class="ch-note">전월 +9% · 리뷰 3.4K개</div>
+          </div>
+          <div class="ch-item">
+            <div class="ch-name">🔴 쿠팡</div>
+            <div class="ch-val">₩14.6M</div>
+            <div class="ch-note">전월 +8% · 로켓배송 적용</div>
+          </div>
+          <div class="ch-item">
+            <div class="ch-name">🏪 오프라인</div>
+            <div class="ch-val">₩3.4M</div>
+            <div class="ch-note">입점처 8곳 · 신규 2곳 협의</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📊 TOP SKU 성과</span>
+        <span class="card-meta">이번 달 매출 기준</span>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead><tr><th>SKU</th><th>매출</th><th>성장률</th><th>재고</th></tr></thead>
+          <tbody>
+            <tr><td>수분크림 50ml</td><td><strong>₩12.4M</strong></td><td style="color:#15803d;font-weight:700;">+24%</td><td>정상</td></tr>
+            <tr><td>세럼 앰플 30ml</td><td><strong>₩9.8M</strong></td><td style="color:#15803d;font-weight:700;">+16%</td><td>정상</td></tr>
+            <tr><td>선크림 SPF50+</td><td><strong>₩8.2M</strong></td><td style="color:#15803d;font-weight:700;">+31%</td><td>⚠ 주의</td></tr>
+            <tr><td>토너 패드 60매</td><td><strong>₩6.1M</strong></td><td style="color:#64748b;">+3%</td><td>정상</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 일본 탭 ====== -->
+<div id="tab-jp" class="hidden">
+  <div class="expand-alert">
+    <span style="font-size:18px;">🚀</span>
+    <span class="expand-text">[확장 준비 중] 일본 시장 런칭 목표: 2026년 Q3</span>
+    <span class="expand-sub">· 큐텐재팬/라쿠텐/아마존재팬 채널 개설 협의 중 · 현지 물류파트너 계약 예정</span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card" style="border-left:4px solid #fbbf24;">
+      <div class="kpi-label">런칭 예정일</div>
+      <div class="kpi-value">D-62</div>
+      <div class="kpi-sub">2026년 7월 1일 목표</div>
+      <span class="kpi-badge badge-yellow">준비 중</span>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #94a3b8;">
+      <div class="kpi-label">준비 채널</div>
+      <div class="kpi-value">3개</div>
+      <div class="kpi-sub">큐텐 · 라쿠텐 · 아마존재팬</div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #94a3b8;">
+      <div class="kpi-label">목표 월 매출 (초기)</div>
+      <div class="kpi-value">¥500K</div>
+      <div class="kpi-sub">약 ₩4.5M / 런칭 3개월 후</div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #94a3b8;">
+      <div class="kpi-label">현지화 준비</div>
+      <div class="kpi-value">62%</div>
+      <div class="kpi-sub">패키지 번역 · SNS 계정 세팅 완료</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📋 일본 런칭 체크리스트</span>
+        <span class="card-meta">준비 현황</span>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead><tr><th>항목</th><th>상태</th><th>완료 목표</th></tr></thead>
+          <tbody>
+            <tr><td>일본어 제품 라벨링 번역</td><td><span style="color:#15803d;font-weight:700;">✓ 완료</span></td><td>완료</td></tr>
+            <tr><td>큐텐재팬 셀러 계정 개설</td><td><span style="color:#15803d;font-weight:700;">✓ 완료</span></td><td>완료</td></tr>
+            <tr><td>현지 물류 파트너 계약</td><td><span style="color:#d97706;font-weight:700;">진행 중</span></td><td>5월 말</td></tr>
+            <tr><td>일본 SNS (인스타/라인) 계정 세팅</td><td><span style="color:#15803d;font-weight:700;">✓ 완료</span></td><td>완료</td></tr>
+            <tr><td>라쿠텐 계정 심사</td><td><span style="color:#d97706;font-weight:700;">심사 중</span></td><td>6월 초</td></tr>
+            <tr><td>일본 통관·성분 인증</td><td><span style="color:#dc2626;font-weight:700;">미착수</span></td><td>6월 중</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📅 글로벌 확장 로드맵</span>
+      </div>
+      <div class="card-body">
+        <div class="roadmap-row">
+          <div class="roadmap-item rm-q2">
+            <div class="rm-label">Q2 2026 (현재)</div>
+            <div class="rm-item">✓ 일본 플랫폼 계정 개설</div>
+            <div class="rm-item">✓ 패키지 현지화 완료</div>
+            <div class="rm-item">→ 물류 파트너 계약 진행</div>
+          </div>
+          <div class="roadmap-item rm-q3">
+            <div class="rm-label">Q3 2026</div>
+            <div class="rm-item">🇯🇵 일본 공식 런칭</div>
+            <div class="rm-item">큐텐·라쿠텐 동시 오픈</div>
+            <div class="rm-item">일본 인플루언서 협업</div>
+          </div>
+          <div class="roadmap-item rm-q4">
+            <div class="rm-label">Q4 2026</div>
+            <div class="rm-item">🇺🇸🇹🇭 미국·태국 시장 조사</div>
+            <div class="rm-item">아마존 US 셀러 등록</div>
+            <div class="rm-item">글로벌 대시보드 고도화</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 미국 탭 ====== -->
+<div id="tab-us" class="hidden">
+  <div class="content full">
+    <div class="card full">
+      <div class="coming-soon">
+        <div class="cs-icon">🇺🇸</div>
+        <div class="cs-title">미국 시장 — 검토 중</div>
+        <div class="cs-sub">아마존 US · TikTok Shop · 한인몰 채널 검토 예정 · 2027년 Q1 목표</div>
+        <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+          <div style="background:#f1f5f9;border-radius:8px;padding:10px 16px;font-size:13px;color:#64748b;"><strong>🏪 아마존 US</strong><br>검토 중</div>
+          <div style="background:#f1f5f9;border-radius:8px;padding:10px 16px;font-size:13px;color:#64748b;"><strong>🎵 TikTok Shop</strong><br>트렌드 모니터링 중</div>
+          <div style="background:#f1f5f9;border-radius:8px;padding:10px 16px;font-size:13px;color:#64748b;"><strong>🌐 한인 이커머스</strong><br>파트너십 검토 중</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 태국 탭 ====== -->
+<div id="tab-th" class="hidden">
+  <div class="content full">
+    <div class="card full">
+      <div class="coming-soon">
+        <div class="cs-icon">🇹🇭</div>
+        <div class="cs-title">태국 시장 — 검토 중</div>
+        <div class="cs-sub">Lazada TH · Shopee TH · 한류 뷰티 채널 검토 예정 · 2027년 Q1 목표</div>
+        <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+          <div style="background:#f1f5f9;border-radius:8px;padding:10px 16px;font-size:13px;color:#64748b;"><strong>🛒 Lazada TH</strong><br>검토 중</div>
+          <div style="background:#f1f5f9;border-radius:8px;padding:10px 16px;font-size:13px;color:#64748b;"><strong>🛍️ Shopee TH</strong><br>검토 중</div>
+          <div style="background:#f1f5f9;border-radius:8px;padding:10px 16px;font-size:13px;color:#64748b;"><strong>📱 Line Official</strong><br>현지 SNS 전략 검토</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:10px;font-size:11px;color:#cbd5e1;">OKEE BEAUTY · 글로벌 확장 대시보드 | GLO:UP AI 운영 진단 — 데모 시각화</div>
+
+<script>
+function switchTab(id, clickedEl) {
+  // Hide all tabs
+  ['kr','jp','us','th'].forEach(t => {
+    const el = document.getElementById('tab-'+t);
+    if (el) el.classList.add('hidden');
+  });
+  // Show selected
+  document.getElementById('tab-'+id).classList.remove('hidden');
+  // Update tab styles
+  document.querySelectorAll('.market-tab').forEach(t => t.classList.remove('active'));
+  clickedEl.classList.add('active');
+}
+</script>
+</body>
+</html>

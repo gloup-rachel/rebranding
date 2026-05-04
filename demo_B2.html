@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오키뷰티 | AI 마케팅 전략 봇 · SKILL 가이드</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: #f8fafc; color: #1e293b; }
+
+  /* HEADER */
+  .header { background: #0f172a; color: #fff; padding: 18px 28px; }
+  .header h1 { font-size: 18px; font-weight: 700; }
+  .header p { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+
+  /* NOTION-STYLE LAYOUT */
+  .page-wrap { max-width: 860px; margin: 0 auto; padding: 32px 28px 60px; }
+
+  .page-icon { font-size: 48px; margin-bottom: 10px; }
+  .page-title { font-size: 32px; font-weight: 800; color: #0f172a; line-height: 1.2; margin-bottom: 6px; }
+  .page-meta { font-size: 13px; color: #94a3b8; margin-bottom: 28px; }
+  .page-divider { border: none; border-top: 1.5px solid #e2e8f0; margin: 20px 0; }
+
+  /* CALLOUT */
+  .callout { display: flex; gap: 10px; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; }
+  .callout-blue { background: #eff6ff; border-left: 3px solid #3b82f6; }
+  .callout-green { background: #f0fdf4; border-left: 3px solid #10b981; }
+  .callout-yellow { background: #fffbeb; border-left: 3px solid #f59e0b; }
+  .callout-icon { font-size: 18px; flex-shrink: 0; }
+  .callout-text { font-size: 13px; line-height: 1.6; color: #334155; }
+  .callout-text strong { color: #0f172a; }
+
+  /* SECTION HEADER */
+  h2 { font-size: 20px; font-weight: 700; color: #0f172a; margin: 28px 0 12px; display: flex; align-items: center; gap: 8px; }
+  h3 { font-size: 15px; font-weight: 700; color: #0f172a; margin: 18px 0 8px; }
+  p { font-size: 13px; color: #475569; line-height: 1.7; margin-bottom: 10px; }
+
+  /* STEP FLOW */
+  .step-flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 16px 0; }
+  .step-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .step-circle { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .step-pre { background: #e2e8f0; color: #475569; }
+  .step-s0 { background: #dbeafe; color: #1d4ed8; }
+  .step-s1 { background: #ede9fe; color: #6d28d9; }
+  .step-ok { background: #dcfce7; color: #15803d; font-size: 14px; }
+  .step-s2 { background: #ede9fe; color: #6d28d9; }
+  .step-s3 { background: #fed7aa; color: #c2410c; }
+  .step-s4 { background: #dcfce7; color: #15803d; }
+  .step-label { font-size: 10px; color: #64748b; text-align: center; white-space: nowrap; }
+  .step-arrow { font-size: 18px; color: #cbd5e1; margin: 0 4px; padding-bottom: 18px; }
+
+  /* TABLE */
+  .notion-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+  .notion-table thead th { background: #f8fafc; color: #475569; font-weight: 700; padding: 9px 14px; text-align: left; border-bottom: 1.5px solid #e2e8f0; font-size: 12px; }
+  .notion-table tbody tr:hover { background: #f8fafc; }
+  .notion-table tbody td { padding: 9px 14px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+  .notion-table tbody tr:last-child td { border-bottom: none; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .tag-connected { background: #dcfce7; color: #15803d; }
+  .tag-manual { background: #fef9c3; color: #a16207; }
+  .tag-required { background: #fee2e2; color: #dc2626; }
+
+  /* DEMO CHAT */
+  .chat-demo { background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; padding: 16px; margin: 14px 0; }
+  .chat-row { display: flex; gap: 10px; margin-bottom: 12px; }
+  .chat-row.user { flex-direction: row-reverse; }
+  .chat-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .avatar-user { background: #ede9fe; }
+  .avatar-bot { background: #0f172a; }
+  .chat-bubble { max-width: 75%; padding: 9px 13px; border-radius: 12px; font-size: 13px; line-height: 1.6; }
+  .bubble-user { background: #3b82f6; color: #fff; border-radius: 12px 12px 2px 12px; }
+  .bubble-bot { background: #f1f5f9; color: #334155; border-radius: 12px 12px 12px 2px; }
+  .chat-name { font-size: 10px; color: #94a3b8; margin-bottom: 3px; }
+
+  /* PRINCIPLES */
+  .principle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .principle-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #334155; line-height: 1.5; }
+  .principle-num { font-size: 10px; color: #94a3b8; margin-bottom: 3px; }
+
+  /* OUTPUT EXAMPLE */
+  .output-box { background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 16px 18px; font-size: 12px; line-height: 1.8; margin: 12px 0; }
+  .out-header { color: #60a5fa; font-weight: 700; margin-bottom: 8px; }
+  .out-section { color: #94a3b8; font-size: 11px; margin: 8px 0 4px; }
+  .out-content { color: #cbd5e1; }
+  .out-highlight { color: #4ade80; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>오키뷰티 (OKEE BEAUTY) · AI 마케팅 전략 봇</h1>
+  <p>SKILL 가이드 문서 · B-2 | AI 활용 마케팅 의사결정 자동화</p>
+</div>
+
+<div class="page-wrap">
+
+  <div class="page-icon">🤖</div>
+  <div class="page-title">OKEE BEAUTY<br>AI 마케팅 전략 봇 사용 가이드</div>
+  <div class="page-meta">v1.0 · GLO:UP 제작 · 2026년 04월 | SKILL.md 기반 운영 가이드</div>
+
+  <hr class="page-divider">
+
+  <div class="callout callout-blue">
+    <span class="callout-icon">💡</span>
+    <div class="callout-text">이 봇은 <strong>오키뷰티 마케팅팀 전용 AI 전략 어시스턴트</strong>입니다. 채널 데이터, SKU 성과, 광고 효율을 기반으로 마케팅 의사결정을 자동으로 분석하고 전략 초안을 생성합니다.</div>
+  </div>
+
+  <h2>⚙️ 사전 연결 체크리스트</h2>
+
+  <table class="notion-table">
+    <thead>
+      <tr><th>연결 항목</th><th>용도</th><th>상태</th><th>확인 방법</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Notion MCP</strong></td>
+        <td>SKU 데이터, 캠페인 히스토리 불러오기</td>
+        <td><span class="tag tag-connected">✓ 연결됨</span></td>
+        <td>Claude 왼쪽 플러그 아이콘 확인</td>
+      </tr>
+      <tr>
+        <td><strong>Google Sheets (Apps Script)</strong></td>
+        <td>매출/재고 데이터 실시간 연동</td>
+        <td><span class="tag tag-connected">✓ 연결됨</span></td>
+        <td>Apps Script 배포 URL 설정 확인</td>
+      </tr>
+      <tr>
+        <td><strong>Claude in Chrome</strong></td>
+        <td>쿠팡/스마트스토어 데이터 직접 스크래핑</td>
+        <td><span class="tag tag-manual">△ 수동 활성화</span></td>
+        <td>크롬 확장 프로그램 아이콘 확인</td>
+      </tr>
+      <tr>
+        <td><strong>Meta Ads Manager</strong></td>
+        <td>광고 성과 데이터 불러오기</td>
+        <td><span class="tag tag-required">연결 필요</span></td>
+        <td>Meta Business 계정 API 토큰 설정</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="page-divider">
+
+  <h2>🔄 실행 플로우</h2>
+  <p>봇을 실행할 때는 아래 순서를 따라 진행합니다. 각 단계마다 <strong>★ OK 사인</strong>을 주어야 다음 단계로 넘어갑니다.</p>
+
+  <div class="step-flow">
+    <div class="step-item">
+      <div class="step-circle step-pre">PRE</div>
+      <div class="step-label">사전 확인</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-circle step-s0">0</div>
+      <div class="step-label">데이터 수집</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-circle step-s1">1</div>
+      <div class="step-label">현황 분석</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-circle step-ok">★OK</div>
+      <div class="step-label">확인</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-circle step-s2">2</div>
+      <div class="step-label">전략 초안</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-circle step-ok">★OK</div>
+      <div class="step-label">확인</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-circle step-s3">3</div>
+      <div class="step-label">실행 계획</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-item">
+      <div class="step-circle step-s4">4</div>
+      <div class="step-label">문서 저장</div>
+    </div>
+  </div>
+
+  <table class="notion-table" style="margin-top:14px;">
+    <thead>
+      <tr><th>단계</th><th>내용</th><th>출력</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>PRE</strong></td>
+        <td>사전 확인 — 연결 상태, 분석 기간, 목적 설정</td>
+        <td>체크리스트 완료 확인</td>
+      </tr>
+      <tr>
+        <td><strong>STEP 0</strong></td>
+        <td>채널 데이터 자동 수집 (매출/재고/광고비)</td>
+        <td>원시 데이터 테이블</td>
+      </tr>
+      <tr>
+        <td><strong>STEP 1</strong></td>
+        <td>현황 분석 — ROI, 채널별 성과, 병목 파악</td>
+        <td>현황 분석 리포트</td>
+      </tr>
+      <tr>
+        <td><strong>★ OK 사인</strong></td>
+        <td>"OK 진행해줘" 입력 → 다음 단계 진행</td>
+        <td>–</td>
+      </tr>
+      <tr>
+        <td><strong>STEP 2</strong></td>
+        <td>전략 초안 생성 — 예산 배분, 채널 최적화, SKU 추천</td>
+        <td>전략 초안 문서</td>
+      </tr>
+      <tr>
+        <td><strong>★ OK 사인</strong></td>
+        <td>수정 요청 또는 "OK 최종 확정"</td>
+        <td>–</td>
+      </tr>
+      <tr>
+        <td><strong>STEP 3</strong></td>
+        <td>실행 계획 — 주차별 액션 아이템 & 담당자 배정</td>
+        <td>실행 플랜 타임라인</td>
+      </tr>
+      <tr>
+        <td><strong>STEP 4</strong></td>
+        <td>Notion 자동 저장 + Google Chat 요약 발송</td>
+        <td>Notion 페이지 링크</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="page-divider">
+
+  <h2>💬 실행 데모 — 마케팅 전략 봇 대화 예시</h2>
+
+  <div class="chat-demo">
+    <div class="chat-row user">
+      <div class="chat-avatar avatar-user">👩</div>
+      <div>
+        <div class="chat-name" style="text-align:right;">조은서 매니저</div>
+        <div class="chat-bubble bubble-user">이번 주 쿠팡 수분크림 매출이 갑자기 떨어진 것 같아. 원인 분석하고 대응 전략 만들어줄 수 있어?</div>
+      </div>
+    </div>
+
+    <div class="chat-row">
+      <div class="chat-avatar avatar-bot">🤖</div>
+      <div>
+        <div class="chat-name">OKEE 마케팅 전략 봇</div>
+        <div class="chat-bubble bubble-bot">
+          <strong>[PRE 체크]</strong> 연결 상태 확인 중...<br>
+          ✓ Notion MCP 연결됨 · ✓ Google Sheets 연동 확인<br><br>
+          <strong>[STEP 0] 데이터 수집 완료</strong><br>
+          📊 쿠팡 OKEE 수분크림 50ml 최근 7일 데이터 수집 완료<br>
+          — 이번 주: 일 평균 3.2건 | 전주: 일 평균 6.8건 (-53%)
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-row">
+      <div class="chat-avatar avatar-bot">🤖</div>
+      <div>
+        <div class="chat-name">OKEE 마케팅 전략 봇</div>
+        <div class="chat-bubble bubble-bot">
+          <strong>[STEP 1] 현황 분석 결과</strong><br><br>
+          🔍 <strong>주요 원인 3가지 감지:</strong><br>
+          1. 재고 소진 임박 (잔여 12개) → 쿠팡 노출 순위 자동 하락<br>
+          2. 경쟁 제품 쿠팡 로켓그로스 입점 (지난주 화요일)<br>
+          3. 광고 소진율 조기 달성 → 오후 노출 차단<br><br>
+          ⚡ 현황 분석 리포트 작성 완료. <strong>계속 진행할까요? (OK 사인)</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-row user">
+      <div class="chat-avatar avatar-user">👩</div>
+      <div>
+        <div class="chat-name" style="text-align:right;">조은서 매니저</div>
+        <div class="chat-bubble bubble-user">OK 진행해줘</div>
+      </div>
+    </div>
+
+    <div class="chat-row">
+      <div class="chat-avatar avatar-bot">🤖</div>
+      <div>
+        <div class="chat-name">OKEE 마케팅 전략 봇</div>
+        <div class="chat-bubble bubble-bot">
+          <strong>[STEP 2] 대응 전략 초안</strong><br><br>
+          📌 <strong>즉시 (오늘):</strong> 수분크림 재고 200개 긴급 발주 요청<br>
+          📌 <strong>이번 주:</strong> 쿠팡 광고 일예산 +30% (₩720K→₩936K) 증액 · 오후 시간대 타겟팅 추가<br>
+          📌 <strong>다음 주:</strong> 경쟁 제품 대비 번들 프로모션 기획 (수분크림+세럼 세트 할인)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="page-divider">
+
+  <h2>📐 봇 운영 원칙</h2>
+  <div class="principle-grid">
+    <div class="principle-item"><div class="principle-num">원칙 01</div>데이터 없는 전략 금지 — 반드시 STEP 0 수집 완료 후 분석 진행</div>
+    <div class="principle-item"><div class="principle-num">원칙 02</div>OK 사인 없이 다음 단계 진행 금지 — 담당자 확인 후 이동</div>
+    <div class="principle-item"><div class="principle-num">원칙 03</div>오키뷰티 브랜드 톤 유지 — 캐주얼하되 전문성 있는 어조</div>
+    <div class="principle-item"><div class="principle-num">원칙 04</div>수동 입력 채널(스마트스토어, 오프라인)은 "데이터 미수집"으로 명시</div>
+    <div class="principle-item"><div class="principle-num">원칙 05</div>전략 초안은 실행 가능한 액션 아이템으로 구성 (추상적 표현 금지)</div>
+    <div class="principle-item"><div class="principle-num">원칙 06</div>모든 분석 결과는 STEP 4에서 Notion 자동 저장 (히스토리 축적)</div>
+  </div>
+
+  <hr class="page-divider">
+
+  <div class="callout callout-green">
+    <span class="callout-icon">✅</span>
+    <div class="callout-text"><strong>빠른 시작:</strong> Claude 채팅창에 <strong>"오키뷰티 마케팅 봇 시작해줘"</strong>라고 입력하면 PRE 체크부터 자동으로 시작됩니다.</div>
+  </div>
+
+</div>
+
+<div style="text-align:center;padding:10px;font-size:11px;color:#cbd5e1;">OKEE BEAUTY · AI 마케팅 전략 봇 가이드 | GLO:UP AI 운영 진단 — 데모 시각화</div>
+
+</body>
+</html>
