@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRISAT 뷰티 | 채널 모니터링 봇 · Schedule</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: #f1f5f9; color: #1e293b; }
+
+  .header { background: #0f172a; color: #fff; padding: 18px 28px; display: flex; justify-content: space-between; align-items: center; }
+  .header-left h1 { font-size: 18px; font-weight: 700; }
+  .header-left p { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .bot-status { display: flex; align-items: center; gap: 6px; background: #1e293b; border-radius: 20px; padding: 5px 14px; font-size: 12px; color: #4ade80; }
+  .bot-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 20px 28px; }
+  .full-width { grid-column: 1 / -1; }
+
+  /* SCHEDULE PANEL */
+  .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); overflow: hidden; }
+  .card-header { padding: 14px 18px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+  .card-title { font-size: 14px; font-weight: 700; color: #0f172a; }
+  .card-sub { font-size: 12px; color: #94a3b8; }
+  .card-body { padding: 16px 18px; }
+
+  .schedule-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; background: #f8fafc; border: 1px solid #e2e8f0; transition: all 0.15s; cursor: pointer; }
+  .schedule-row:hover { border-color: #94a3b8; background: #f1f5f9; }
+  .schedule-row.active { background: #eff6ff; border-color: #93c5fd; }
+  .schedule-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .icon-blue { background: #dbeafe; }
+  .icon-green { background: #dcfce7; }
+  .icon-orange { background: #fed7aa; }
+  .icon-purple { background: #ede9fe; }
+  .schedule-info { flex: 1; }
+  .schedule-name { font-size: 13px; font-weight: 600; color: #0f172a; }
+  .schedule-time { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .schedule-toggle { position: relative; }
+  .toggle-input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-label { display: block; width: 40px; height: 22px; background: #e2e8f0; border-radius: 11px; cursor: pointer; transition: background 0.2s; position: relative; }
+  .toggle-label::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .toggle-input:checked + .toggle-label { background: #3b82f6; }
+  .toggle-input:checked + .toggle-label::after { left: 20px; }
+  .next-run { font-size: 11px; color: #3b82f6; font-weight: 600; white-space: nowrap; }
+
+  /* LOG FEED */
+  .log-feed { max-height: 300px; overflow-y: auto; }
+  .log-item { padding: 10px 14px; border-left: 3px solid #e2e8f0; margin-bottom: 8px; border-radius: 0 8px 8px 0; background: #f8fafc; }
+  .log-item.success { border-left-color: #10b981; }
+  .log-item.warning { border-left-color: #f59e0b; background: #fffbeb; }
+  .log-item.error { border-left-color: #ef4444; background: #fef2f2; }
+  .log-time { font-size: 11px; color: #94a3b8; }
+  .log-msg { font-size: 12px; color: #334155; margin-top: 3px; font-weight: 500; }
+  .log-detail { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+  /* REPORT PREVIEW */
+  .report-preview { background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 16px 18px; font-size: 12px; line-height: 1.8; font-family: 'SF Mono', 'Consolas', monospace; }
+  .rp-header { color: #60a5fa; font-weight: 700; font-size: 13px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; margin-bottom: 10px; }
+  .rp-section { color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin: 10px 0 4px; }
+  .rp-line { display: flex; justify-content: space-between; }
+  .rp-key { color: #cbd5e1; }
+  .rp-val { color: #4ade80; font-weight: 600; }
+  .rp-val.warn { color: #fbbf24; }
+  .rp-val.bad { color: #f87171; }
+  .rp-footer { margin-top: 10px; padding-top: 8px; border-top: 1px solid #1e293b; color: #64748b; font-size: 11px; }
+
+  /* CHANNEL STAT */
+  .ch-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ch-stat { padding: 10px 14px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
+  .ch-stat-name { font-size: 11px; color: #64748b; font-weight: 600; margin-bottom: 4px; }
+  .ch-stat-val { font-size: 18px; font-weight: 800; color: #0f172a; }
+  .ch-stat-note { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+  /* RUN BUTTON */
+  .run-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: #3b82f6; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .run-btn:hover { background: #2563eb; }
+  .run-btn.running { background: #64748b; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>FRISAT 뷰티 (FRISAT BEAUTY) · 채널별 모니터링 봇</h1>
+    <p>자동 리포트 · Schedule 운영 데모 | B-1. 채널 데이터 자동 취합 & 알림</p>
+  </div>
+  <div class="header-right">
+    <div class="bot-status">
+      <div class="bot-dot"></div>
+      봇 운영 중 · 5개 스케줄 활성
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SCHEDULE CONFIG -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">📅 자동 리포트 스케줄</span>
+      <button class="run-btn" id="runNowBtn" onclick="runNow()">▶ 지금 실행</button>
+    </div>
+    <div class="card-body">
+
+      <div class="schedule-row active">
+        <div class="schedule-icon icon-blue">🌅</div>
+        <div class="schedule-info">
+          <div class="schedule-name">일간 매출 요약 리포트</div>
+          <div class="schedule-time">매일 오전 09:00 · 자사몰 + 스마트스토어 + 쿠팡</div>
+        </div>
+        <span class="next-run">09:00 예정</span>
+        <div class="schedule-toggle">
+          <input type="checkbox" class="toggle-input" id="t1" checked>
+          <label class="toggle-label" for="t1"></label>
+        </div>
+      </div>
+
+      <div class="schedule-row active">
+        <div class="schedule-icon icon-green">📦</div>
+        <div class="schedule-info">
+          <div class="schedule-name">재고 소진 알럿 체크</div>
+          <div class="schedule-time">매일 오전 10:00 · 전 채널 SKU 재고 스캔</div>
+        </div>
+        <span class="next-run">10:00 예정</span>
+        <div class="schedule-toggle">
+          <input type="checkbox" class="toggle-input" id="t2" checked>
+          <label class="toggle-label" for="t2"></label>
+        </div>
+      </div>
+
+      <div class="schedule-row active">
+        <div class="schedule-icon icon-orange">📣</div>
+        <div class="schedule-info">
+          <div class="schedule-name">광고비 소진율 모니터링</div>
+          <div class="schedule-time">매일 오후 3:00, 8:00 · Meta + 검색광고</div>
+        </div>
+        <span class="next-run">15:00 예정</span>
+        <div class="schedule-toggle">
+          <input type="checkbox" class="toggle-input" id="t3" checked>
+          <label class="toggle-label" for="t3"></label>
+        </div>
+      </div>
+
+      <div class="schedule-row active">
+        <div class="schedule-icon icon-purple">📊</div>
+        <div class="schedule-info">
+          <div class="schedule-name">주간 채널 성과 요약</div>
+          <div class="schedule-time">매주 월요일 09:30 · 전체 채널 통합 리포트</div>
+        </div>
+        <span class="next-run">월요일 09:30</span>
+        <div class="schedule-toggle">
+          <input type="checkbox" class="toggle-input" id="t4" checked>
+          <label class="toggle-label" for="t4"></label>
+        </div>
+      </div>
+
+      <div class="schedule-row">
+        <div class="schedule-icon" style="background:#f1f5f9;">🌍</div>
+        <div class="schedule-info">
+          <div class="schedule-name">글로벌 채널 모니터링</div>
+          <div class="schedule-time">매일 오전 08:00 · 글로벌 확장 시 활성화</div>
+        </div>
+        <span class="next-run" style="color:#94a3b8;">비활성</span>
+        <div class="schedule-toggle">
+          <input type="checkbox" class="toggle-input" id="t5">
+          <label class="toggle-label" for="t5"></label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- REPORT PREVIEW -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">📋 자동 생성 리포트 미리보기</span>
+      <span class="card-sub" id="reportTimestamp">오늘 09:00 자동 발송 완료</span>
+    </div>
+    <div class="card-body">
+      <div class="report-preview" id="reportPreview">
+        <div class="rp-header">🛍️ FRISAT BEAUTY · 일간 매출 리포트 [2026-04-28 09:00]</div>
+
+        <div class="rp-section">■ 오늘의 매출 현황</div>
+        <div class="rp-line"><span class="rp-key">자사몰</span><span class="rp-val" id="rv1">₩892,000</span></div>
+        <div class="rp-line"><span class="rp-key">스마트스토어</span><span class="rp-val" id="rv2">₩1,240,000</span></div>
+        <div class="rp-line"><span class="rp-key">쿠팡</span><span class="rp-val" id="rv3">₩2,108,000</span></div>
+        <div class="rp-line" style="margin-top:4px;"><span class="rp-key" style="color:#60a5fa;font-weight:700;">📌 합계</span><span class="rp-val" style="font-size:14px;" id="rv4">₩4,240,000</span></div>
+
+        <div class="rp-section">■ 재고 알럿</div>
+        <div class="rp-line"><span class="rp-key">OKEE 수분크림 50ml (쿠팡)</span><span class="rp-val bad">⚠ 잔여 12개 (2.4일)</span></div>
+        <div class="rp-line"><span class="rp-key">OKEE 선크림 SPF50+ (자사몰)</span><span class="rp-val warn">△ 잔여 14개 (2.5일)</span></div>
+
+        <div class="rp-section">■ 광고 소진율</div>
+        <div class="rp-line"><span class="rp-key">Meta 광고</span><span class="rp-val warn">63% 소진 (잔여 ₩666K)</span></div>
+        <div class="rp-line"><span class="rp-key">검색광고</span><span class="rp-val">41% 소진 (잔여 ₩531K)</span></div>
+
+        <div class="rp-footer">→ Google Chat #매출-모니터링 채널에 자동 전송됨 · Apps Script 연동</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG FEED -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">🔔 실행 로그</span>
+      <span class="card-sub" id="logCount">오늘 8건 실행</span>
+    </div>
+    <div class="card-body">
+      <div class="log-feed" id="logFeed">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANNEL STATS -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">📡 채널별 API 연동 상태</span>
+      <span class="card-sub">실시간 수집 현황</span>
+    </div>
+    <div class="card-body">
+      <div class="ch-stat-grid">
+        <div class="ch-stat">
+          <div class="ch-stat-name">자사몰 (Shopify)</div>
+          <div class="ch-stat-val" style="color:#15803d;">✓ 연동</div>
+          <div class="ch-stat-note">API 자동 수집 · 5분마다</div>
+        </div>
+        <div class="ch-stat">
+          <div class="ch-stat-name">스마트스토어</div>
+          <div class="ch-stat-val" style="color:#d97706;">△ 수동</div>
+          <div class="ch-stat-note">API 미제공 · 일 1회 수동 입력</div>
+        </div>
+        <div class="ch-stat">
+          <div class="ch-stat-name">쿠팡 파트너스</div>
+          <div class="ch-stat-val" style="color:#15803d;">✓ 연동</div>
+          <div class="ch-stat-note">API 자동 수집 · 1시간마다</div>
+        </div>
+        <div class="ch-stat">
+          <div class="ch-stat-name">오프라인 입점처</div>
+          <div class="ch-stat-val" style="color:#d97706;">△ 수동</div>
+          <div class="ch-stat-note">월 1회 정산 데이터 수동 입력</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:10px 12px;background:#f0fdf4;border-radius:8px;font-size:12px;color:#15803d;">
+        💡 <strong>수동 채널은 매일 오전 입력 0.5h 소요</strong> · Apps Script로 Google Sheet 자동 집계 연동
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center;padding:10px;font-size:11px;color:#cbd5e1;">FRISAT BEAUTY · 채널 모니터링 봇 | GLO:UP AI 운영 진단 — 데모 시각화</div>
+
+<script>
+const logs = [
+  { time: '09:00:03', type: 'success', msg: '일간 매출 요약 리포트 실행 완료', detail: '자사몰 ₩892K / 스마트스토어 ₩1,240K / 쿠팡 ₩2,108K → Google Chat 전송' },
+  { time: '09:00:05', type: 'warning', msg: '[재고 알럿] OKEE 수분크림 50ml (쿠팡) 품절 위험', detail: '잔여 12개 · 예상 소진 2.4일 · 발주 알림 발송' },
+  { time: '08:31:12', type: 'success', msg: '쿠팡 파트너스 API 데이터 수집 완료', detail: '주문 건수 38건 · 취소 2건 · 정상 처리' },
+  { time: '08:00:01', type: 'success', msg: '광고 소진율 1차 체크 완료', detail: 'Meta 63% · 검색광고 41% · 이상 없음' },
+  { time: '07:05:22', type: 'success', msg: 'Shopify 자사몰 API 동기화 완료', detail: '재고 수량 업데이트 12 SKU · 소요 1.2초' },
+  { time: '어제 21:00', type: 'success', msg: '저녁 광고비 소진율 체크 완료', detail: 'Meta 59% · 검색광고 38% · 예산 내 운영 중' },
+  { time: '어제 09:30', type: 'success', msg: '주간 채널 성과 요약 리포트 발송', detail: '주간 매출 ₩12.4M · 전주 대비 +8.3% · 링크 첨부' },
+  { time: '어제 09:00', type: 'warning', msg: '[재고 주의] OKEE 토너 패드 (스마트스토어)', detail: '잔여 19개 · 5.3일 소진 예상 · 발주 검토 요망' },
+];
+
+function renderLogs(data) {
+  const feed = document.getElementById('logFeed');
+  feed.innerHTML = data.map(l => `
+    <div class="log-item ${l.type}">
+      <div class="log-time">${l.time}</div>
+      <div class="log-msg">${l.msg}</div>
+      <div class="log-detail">${l.detail}</div>
+    </div>
+  `).join('');
+}
+
+function runNow() {
+  const btn = document.getElementById('runNowBtn');
+  btn.textContent = '⏳ 실행 중...';
+  btn.classList.add('running');
+  setTimeout(() => {
+    const newLog = { time: '방금 전', type: 'success', msg: '수동 실행: 일간 매출 요약 리포트 완료', detail: '전 채널 데이터 취합 완료 · Google Chat 전송됨' };
+    logs.unshift(newLog);
+    renderLogs(logs);
+    document.getElementById('logCount').textContent = `오늘 ${logs.length}건 실행`;
+    btn.textContent = '✓ 실행 완료';
+    setTimeout(() => {
+      btn.textContent = '▶ 지금 실행';
+      btn.classList.remove('running');
+    }, 2000);
+  }, 1800);
+}
+
+renderLogs(logs);
+</script>
+</body>
+</html>
