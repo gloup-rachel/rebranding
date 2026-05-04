@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRISAT — Logo Mockup v1.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,800&family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* === FRISAT Brand System v1.0 === */
+    --point: #6C31D4;          /* Vivid Purple - 포인트 */
+    --base-bg: #F9F8FF;        /* Purple Tint White - 베이스 */
+    --blob-1: #8390CA;         /* Periwinkle - 번짐 블롭 */
+    --blob-2: #C0E0DB;         /* Soft Mint - 번짐 블롭 */
+    --blob-3: #F7A7A6;         /* Blush Pink - 번짐 블롭 */
+    --headline: #1A1238;       /* Deep Purple Dark - 헤드라인 */
+    --body: #8A87B8;           /* Medium Purple Grey - 본문 */
+    --tint: #E8DFFF;           /* Light Purple Tint - 배지 배경 */
+    --line: #E8E5F5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{
+    background:var(--base-bg);
+    color:var(--headline);
+    font-family:'Pretendard',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .page{max-width:1280px;margin:0 auto;padding:64px 48px 96px;position:relative}
+
+  /* Background blobs - subtle paper-like atmosphere */
+  .page::before{
+    content:"";position:absolute;
+    top:80px;right:-100px;width:480px;height:480px;border-radius:50%;
+    background:var(--blob-1);opacity:.12;filter:blur(80px);z-index:0;
+    pointer-events:none;
+  }
+  .page::after{
+    content:"";position:absolute;
+    bottom:200px;left:-120px;width:420px;height:420px;border-radius:50%;
+    background:var(--blob-3);opacity:.10;filter:blur(80px);z-index:0;
+    pointer-events:none;
+  }
+  .page > *{position:relative;z-index:1}
+
+  /* === Header === */
+  header{
+    border-bottom:1px solid var(--line);
+    padding-bottom:32px;margin-bottom:48px;
+    display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;
+  }
+  .h-left .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--body);margin-bottom:14px;
+  }
+  .h-left h1{
+    font-family:'Pretendard',sans-serif;font-weight:700;
+    font-size:56px;line-height:1;letter-spacing:-.03em;color:var(--headline);
+  }
+  .h-left h1 em{font-style:normal;color:var(--point);font-weight:800}
+  .h-right{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--body);
+    text-align:right;line-height:1.7;
+  }
+  .h-right .badge{
+    display:inline-block;padding:4px 10px;background:var(--tint);
+    color:var(--point);border-radius:4px;font-weight:700;
+  }
+
+  /* === Grid === */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+  .card{
+    background:#FFFFFF;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:48px 40px 32px;
+    position:relative;
+    min-height:440px;
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  }
+  .card.full{grid-column:1/-1}
+
+  /* Subtle blob inside cards */
+  .card .ambient{
+    position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;
+    opacity:.18;
+  }
+  .card .ambient.tl{top:-60px;left:-60px;width:240px;height:240px;background:var(--blob-1)}
+  .card .ambient.br{bottom:-60px;right:-60px;width:220px;height:220px;background:var(--blob-3)}
+
+  .tag{
+    position:absolute;top:20px;left:24px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;
+    color:var(--body);text-transform:uppercase;z-index:2;
+  }
+  .tag .num{
+    color:var(--point);margin-right:8px;font-weight:700;
+    background:var(--tint);padding:2px 6px;border-radius:3px;
+  }
+  .meta{
+    position:absolute;top:20px;right:24px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;
+    color:var(--body);text-transform:uppercase;z-index:2;
+  }
+
+  .stage{
+    flex:1;display:flex;align-items:center;justify-content:center;
+    padding:48px 0 36px;position:relative;z-index:2;
+  }
+
+  .footer-card{
+    border-top:1px solid var(--line);padding-top:18px;margin-top:8px;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
+    position:relative;z-index:2;
+  }
+  .title{
+    font-family:'Pretendard',sans-serif;font-size:16px;letter-spacing:-.01em;
+    font-weight:700;color:var(--headline);
+  }
+  .desc{
+    font-size:12px;color:var(--body);line-height:1.6;max-width:62%;
+    font-weight:400;margin-top:4px;
+  }
+  .swatches{display:flex;gap:6px;align-items:center;flex-shrink:0}
+  .sw{width:14px;height:14px;border-radius:50%;border:1px solid rgba(26,18,56,.08)}
+
+  /* ============ OPTION 1 — The One Drop ============ */
+  .opt1 .stage{flex-direction:column;gap:16px}
+  .wm-1{
+    font-family:'Pretendard',sans-serif;font-weight:800;
+    font-size:84px;letter-spacing:-.02em;color:var(--headline);
+    position:relative;line-height:1;display:flex;align-items:center;
+  }
+  .wm-1 .f{color:var(--point)}
+  .wm-1 .rest{position:relative}
+  .wm-1 .drop{
+    position:absolute;top:-22px;left:46%;
+    width:14px;height:14px;border-radius:50% 50% 50% 0;
+    background:var(--point);transform:rotate(-45deg);
+    box-shadow:0 4px 12px rgba(108,49,212,.35);
+    animation:drop1 3.6s ease-in-out infinite;
+  }
+  @keyframes drop1{
+    0%,100%{transform:rotate(-45deg) translateY(0)}
+    50%{transform:rotate(-45deg) translateY(-4px)}
+  }
+  .sub-1{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.42em;
+    color:var(--body);text-transform:uppercase;
+  }
+
+  /* ============ OPTION 2 — Before / After Split ============ */
+  .opt2 .stage{flex-direction:column;gap:20px}
+  .wm-2{
+    font-family:'Pretendard',sans-serif;font-weight:800;font-size:78px;letter-spacing:-.02em;
+    line-height:1;display:flex;align-items:center;
+  }
+  .wm-2 .left{
+    color:transparent;-webkit-text-stroke:1.5px var(--body);
+  }
+  .wm-2 .divider{
+    width:1px;height:60px;background:var(--blob-1);margin:0 20px;opacity:.6;
+  }
+  .wm-2 .right{
+    color:var(--point);
+    text-shadow:0 4px 24px rgba(108,49,212,.18);
+  }
+  .ba-labels{
+    display:flex;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.32em;
+    color:var(--body);text-transform:uppercase;width:100%;justify-content:center;gap:120px;
+  }
+  .ba-labels .after{color:var(--point);font-weight:700}
+
+  /* ============ OPTION 3 — Palette Mark ============ */
+  .opt3 .stage{flex-direction:column;gap:24px}
+  .palette{display:flex;gap:8px;align-items:center}
+  .chip{
+    width:50px;height:50px;border-radius:6px;
+    border:1px solid rgba(26,18,56,.05);
+    box-shadow:0 4px 12px rgba(26,18,56,.04);
+  }
+  .chip.c1{background:var(--blob-2)}    /* mint */
+  .chip.c2{background:var(--blob-3)}    /* blush */
+  .chip.c3{background:var(--blob-1)}    /* periwinkle */
+  .chip.c4{background:var(--tint)}      /* light tint */
+  .chip.c5{
+    background:var(--point);             /* vivid purple - the "selected" */
+    box-shadow:0 6px 20px rgba(108,49,212,.35);
+    transform:translateY(-4px);
+  }
+  .wm-3{
+    font-family:'Pretendard',sans-serif;font-weight:700;font-size:48px;letter-spacing:.04em;
+    color:var(--headline);
+  }
+  .wm-3 .f{color:var(--point)}
+
+  /* ============ OPTION 4 — Brush Stroke F ============ */
+  .opt4 .stage{flex-direction:row;gap:32px;align-items:center;justify-content:center}
+  .brush-f{width:130px;height:130px;display:flex;align-items:center;justify-content:center}
+  .brush-f svg{width:100%;height:100%}
+  .wm-4{
+    font-family:'Pretendard',sans-serif;font-weight:300;font-size:54px;letter-spacing:.16em;
+    color:var(--headline);line-height:1;
+  }
+  .wm-4 .f-letter{font-weight:800;color:var(--point)}
+  .wm-4 small{
+    display:block;
+    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.4em;
+    color:var(--body);margin-top:10px;font-weight:400;
+  }
+
+  /* ============ OPTION 5 — Drop-in Module ============ */
+  .opt5 .stage{flex-direction:column;gap:24px}
+  .module{display:flex;align-items:center;gap:6px}
+  .slot{
+    width:44px;height:44px;border:1.5px dashed var(--blob-1);
+    background:transparent;border-radius:4px;opacity:.6;
+  }
+  .slot.filled{
+    border:none;background:var(--point);opacity:1;
+    box-shadow:0 8px 24px rgba(108,49,212,.32);
+    animation:pulse5 2.8s ease-in-out infinite;
+    border-radius:4px;
+  }
+  @keyframes pulse5{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-4px)}
+  }
+  .wm-5{
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:36px;
+    letter-spacing:.18em;color:var(--headline);
+  }
+  .wm-5 .bracket{color:var(--point);font-weight:400}
+  .sub-5{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.32em;
+    color:var(--body);text-transform:uppercase;
+  }
+
+  /* ============ Summary ============ */
+  .summary{
+    margin-top:48px;background:#FFFFFF;border:1px solid var(--line);
+    border-radius:8px;padding:36px 40px;position:relative;overflow:hidden;
+  }
+  .summary::before{
+    content:"";position:absolute;top:-100px;right:-100px;width:300px;height:300px;
+    border-radius:50%;background:var(--blob-2);opacity:.15;filter:blur(60px);
+  }
+  .summary h2{
+    font-family:'Pretendard',sans-serif;font-weight:700;font-size:22px;letter-spacing:-.02em;
+    margin-bottom:6px;color:var(--headline);position:relative;
+  }
+  .summary .h-sub{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
+    color:var(--body);text-transform:uppercase;margin-bottom:24px;position:relative;
+  }
+  .sum-grid{
+    display:grid;grid-template-columns:60px 1.5fr 1fr 1.2fr;
+    font-size:12px;position:relative;
+  }
+  .sum-grid > div{padding:14px 12px;border-top:1px solid var(--line);color:var(--headline)}
+  .sum-grid .head{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--body);border-top:none;
+  }
+  .sum-grid .opt-num{
+    font-family:'JetBrains Mono',monospace;color:var(--point);font-weight:700;
+  }
+  .sum-grid .opt-name{font-weight:700;font-size:13px;color:var(--headline)}
+  .sum-grid .mood{color:var(--body)}
+  .sum-grid .best{color:var(--headline)}
+
+  /* === Color Palette Reference === */
+  .palette-ref{
+    margin-top:28px;background:#FFFFFF;border:1px solid var(--line);
+    border-radius:8px;padding:28px 36px;
+  }
+  .palette-ref h3{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
+    color:var(--body);text-transform:uppercase;margin-bottom:18px;
+  }
+  .palette-ref h3 strong{color:var(--point)}
+  .ref-row{display:flex;gap:14px;flex-wrap:wrap}
+  .ref-chip{
+    display:flex;align-items:center;gap:10px;padding:10px 14px;
+    background:var(--base-bg);border-radius:6px;border:1px solid var(--line);
+  }
+  .ref-color{width:24px;height:24px;border-radius:4px;border:1px solid rgba(26,18,56,.06)}
+  .ref-info{display:flex;flex-direction:column;gap:1px}
+  .ref-name{font-size:11px;font-weight:700;color:var(--headline)}
+  .ref-hex{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--body);letter-spacing:.04em}
+
+  footer{
+    margin-top:36px;display:flex;justify-content:space-between;align-items:center;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
+    color:var(--body);text-transform:uppercase;padding-top:24px;border-top:1px solid var(--line);
+  }
+  footer .point{color:var(--point);font-weight:700}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="h-left">
+      <div class="eyebrow">Brand Identity v1.0 · Logo Drafts Updated</div>
+      <h1>FRISAT <em>·</em> 5 Directions</h1>
+    </div>
+    <div class="h-right">
+      AX Inhouse Marketing Brand<br>
+      <span class="badge">v1.0 Palette Applied</span><br>
+      Vivid Purple #6C31D4
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- ========== OPTION 1 ========== -->
+    <div class="card opt1">
+      <div class="ambient tl"></div>
+      <div class="tag"><span class="num">01</span>The One Drop</div>
+      <div class="meta">Editorial · Minimal</div>
+      <div class="stage">
+        <div class="wm-1">
+          <span class="f">F</span><span class="rest">RISAT<span class="drop"></span></span>
+        </div>
+        <div class="sub-1">A · X · Inhouse · Marketing</div>
+      </div>
+      <div class="footer-card">
+        <div>
+          <div class="title">한 방울의 시그니처</div>
+          <p class="desc">'F' 한 글자만 비비드 퍼플로 점화. 'T' 위에서 떨어지는 퍼플 드롭이 "스며드는 시스템"을 직관적으로 시각화.</p>
+        </div>
+        <div class="swatches">
+          <div class="sw" style="background:var(--headline)"></div>
+          <div class="sw" style="background:var(--point)"></div>
+          <div class="sw" style="background:var(--base-bg)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== OPTION 2 ========== -->
+    <div class="card opt2">
+      <div class="ambient br"></div>
+      <div class="tag"><span class="num">02</span>Before / After Split</div>
+      <div class="meta">Conceptual · Narrative</div>
+      <div class="stage">
+        <div class="wm-2">
+          <span class="left">FRI</span>
+          <span class="divider"></span>
+          <span class="right">SAT</span>
+        </div>
+        <div class="ba-labels">
+          <span>— Before</span>
+          <span class="after">After —</span>
+        </div>
+      </div>
+      <div class="footer-card">
+        <div>
+          <div class="title">변화의 서사</div>
+          <p class="desc">FRI(아웃라인) | SAT(비비드 퍼플 솔리드). 8주 전후의 조직 변화를 워드마크 자체에 박제. 그라데이션이 아닌 명확한 분기점.</p>
+        </div>
+        <div class="swatches">
+          <div class="sw" style="background:transparent;border:1.5px solid var(--body)"></div>
+          <div class="sw" style="background:var(--point)"></div>
+          <div class="sw" style="background:var(--blob-1)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== OPTION 3 ========== -->
+    <div class="card opt3">
+      <div class="ambient tl"></div>
+      <div class="tag"><span class="num">03</span>Palette Mark</div>
+      <div class="meta">Tool · Designer-Native</div>
+      <div class="stage">
+        <div class="palette">
+          <div class="chip c1"></div>
+          <div class="chip c2"></div>
+          <div class="chip c3"></div>
+          <div class="chip c4"></div>
+          <div class="chip c5"></div>
+        </div>
+        <div class="wm-3"><span class="f">F</span>RISAT</div>
+      </div>
+      <div class="footer-card">
+        <div>
+          <div class="title">컬러 팔레트 = 자동화 모듈</div>
+          <p class="desc">민트·블러쉬·페리윙클·라이트틴트 → 비비드 퍼플로 수렴. 마지막 칩이 살짝 떠오르며 "선택된 시그니처 모듈"임을 암시.</p>
+        </div>
+        <div class="swatches">
+          <div class="sw" style="background:var(--blob-2)"></div>
+          <div class="sw" style="background:var(--blob-3)"></div>
+          <div class="sw" style="background:var(--blob-1)"></div>
+          <div class="sw" style="background:var(--point)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== OPTION 4 ========== -->
+    <div class="card opt4">
+      <div class="ambient br"></div>
+      <div class="tag"><span class="num">04</span>Brush Stroke F</div>
+      <div class="meta">Humanism · Crafted Touch</div>
+      <div class="stage">
+        <div class="brush-f">
+          <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="ink-purple" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1A1238"/>
+                <stop offset="60%" stop-color="#6C31D4"/>
+                <stop offset="100%" stop-color="#6C31D4"/>
+              </linearGradient>
+              <filter id="rough-purple">
+                <feTurbulence baseFrequency="0.85" numOctaves="2" seed="5"/>
+                <feDisplacementMap in="SourceGraphic" scale="1.8"/>
+              </filter>
+            </defs>
+            <!-- vertical stem -->
+            <path d="M38 18 Q34 70 36 122 Q38 126 42 122 Q44 70 46 20 Q44 14 38 18 Z"
+                  fill="url(#ink-purple)" filter="url(#rough-purple)"/>
+            <!-- top horizontal -->
+            <path d="M40 22 Q70 18 108 22 Q112 26 106 32 Q72 30 40 32 Q36 28 40 22 Z"
+                  fill="url(#ink-purple)" filter="url(#rough-purple)"/>
+            <!-- middle horizontal -->
+            <path d="M40 64 Q66 62 92 65 Q96 68 90 73 Q66 72 40 73 Q36 70 40 64 Z"
+                  fill="url(#ink-purple)" filter="url(#rough-purple)"/>
+            <!-- accent drop at brush end -->
+            <circle cx="100" cy="68" r="4" fill="#6C31D4"/>
+            <circle cx="100" cy="68" r="7" fill="#6C31D4" opacity="0.25"/>
+          </svg>
+        </div>
+        <div class="wm-4">
+          <span class="f-letter">F</span>RISAT
+          <small>Human × Automated</small>
+        </div>
+      </div>
+      <div class="footer-card">
+        <div>
+          <div class="title">전문가의 손맛, 그대로 이식</div>
+          <p class="desc">'F' 심볼은 딥 퍼플→비비드 퍼플 그라데이션 붓터치. 끝부분에 퍼플 잉크 한 방울이 맺힌 디테일로 "이식의 순간"을 포착.</p>
+        </div>
+        <div class="swatches">
+          <div class="sw" style="background:var(--headline)"></div>
+          <div class="sw" style="background:var(--point)"></div>
+          <div class="sw" style="background:var(--base-bg)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== OPTION 5 ========== -->
+    <div class="card opt5 full">
+      <div class="ambient tl"></div>
+      <div class="ambient br"></div>
+      <div class="tag"><span class="num">05</span>Drop-in Module</div>
+      <div class="meta">Tech · System · B2B SaaS</div>
+      <div class="stage">
+        <div class="module">
+          <div class="slot"></div>
+          <div class="slot"></div>
+          <div class="slot filled"></div>
+          <div class="slot"></div>
+          <div class="slot"></div>
+        </div>
+        <div class="wm-5"><span class="bracket">[</span> FRISAT <span class="bracket">]</span></div>
+        <div class="sub-5">drop-in · plug-in · ship in 8 weeks</div>
+      </div>
+      <div class="footer-card">
+        <div>
+          <div class="title">조직에 모듈을 이식하다</div>
+          <p class="desc">페리윙클 점선 슬롯 4개 사이로, 비비드 퍼플 모듈 1개가 "딸깍" 끼워진 상태. 5개 중 가장 시스템·B2B SaaS 정체성에 부합.</p>
+        </div>
+        <div class="swatches">
+          <div class="sw" style="background:transparent;border:1.5px dashed var(--blob-1)"></div>
+          <div class="sw" style="background:var(--point)"></div>
+          <div class="sw" style="background:var(--headline)"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ SUMMARY MATRIX ============ -->
+  <div class="summary">
+    <h2>Direction Matrix</h2>
+    <div class="h-sub">v1.0 Palette · Vivid Purple Anchored</div>
+    <div class="sum-grid">
+      <div class="head">No.</div>
+      <div class="head">Concept</div>
+      <div class="head">Mood Axis</div>
+      <div class="head">Best Fit</div>
+
+      <div class="opt-num">01</div>
+      <div class="opt-name">The One Drop</div>
+      <div class="mood">Minimal · Editorial</div>
+      <div class="best">랜딩 헤더 워드마크와 일관성 가장 높음</div>
+
+      <div class="opt-num">02</div>
+      <div class="opt-name">Before / After Split</div>
+      <div class="mood">Conceptual · Narrative</div>
+      <div class="best">"8주 전후" 변화 메시징, 케이스스터디</div>
+
+      <div class="opt-num">03</div>
+      <div class="opt-name">Palette Mark</div>
+      <div class="mood">Tool · Designer-Native</div>
+      <div class="best">번짐 블롭 3색 + 포인트 퍼플 시스템 직관 표현</div>
+
+      <div class="opt-num">04</div>
+      <div class="opt-name">Brush Stroke F</div>
+      <div class="mood">Humanism · Crafted</div>
+      <div class="best">"전문가 이식" 메시지 가장 강한 컨설팅 톤</div>
+
+      <div class="opt-num">05</div>
+      <div class="opt-name">Drop-in Module</div>
+      <div class="mood">Tech · System · B2B</div>
+      <div class="best">SaaS·인하우스 시스템 브랜드 무드</div>
+    </div>
+  </div>
+
+  <!-- ============ Color Reference ============ -->
+  <div class="palette-ref">
+    <h3>Applied Palette · <strong>FRISAT v1.0</strong></h3>
+    <div class="ref-row">
+      <div class="ref-chip">
+        <div class="ref-color" style="background:#6C31D4"></div>
+        <div class="ref-info">
+          <span class="ref-name">Vivid Purple</span>
+          <span class="ref-hex">#6C31D4 · 포인트</span>
+        </div>
+      </div>
+      <div class="ref-chip">
+        <div class="ref-color" style="background:#1A1238"></div>
+        <div class="ref-info">
+          <span class="ref-name">Deep Purple Dark</span>
+          <span class="ref-hex">#1A1238 · 헤드라인</span>
+        </div>
+      </div>
+      <div class="ref-chip">
+        <div class="ref-color" style="background:#8390CA"></div>
+        <div class="ref-info">
+          <span class="ref-name">Periwinkle</span>
+          <span class="ref-hex">#8390CA · 블롭1</span>
+        </div>
+      </div>
+      <div class="ref-chip">
+        <div class="ref-color" style="background:#C0E0DB"></div>
+        <div class="ref-info">
+          <span class="ref-name">Soft Mint</span>
+          <span class="ref-hex">#C0E0DB · 블롭2</span>
+        </div>
+      </div>
+      <div class="ref-chip">
+        <div class="ref-color" style="background:#F7A7A6"></div>
+        <div class="ref-info">
+          <span class="ref-name">Blush Pink</span>
+          <span class="ref-hex">#F7A7A6 · 블롭3</span>
+        </div>
+      </div>
+      <div class="ref-chip">
+        <div class="ref-color" style="background:#E8DFFF"></div>
+        <div class="ref-info">
+          <span class="ref-name">Light Purple Tint</span>
+          <span class="ref-hex">#E8DFFF · 배지</span>
+        </div>
+      </div>
+      <div class="ref-chip">
+        <div class="ref-color" style="background:#F9F8FF;border:1px solid var(--line)"></div>
+        <div class="ref-info">
+          <span class="ref-name">Purple Tint White</span>
+          <span class="ref-hex">#F9F8FF · 베이스</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>FRISAT · Logo Mockup v1.0 · 2026</div>
+    <div><span class="point">●</span> Palette System Applied</div>
+  </footer>
+
+</div>
+</body>
+</html>
