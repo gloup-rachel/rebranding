@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오키뷰티 | 월 마감 ROI 시뮬레이션</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: #f1f5f9; color: #1e293b; }
+
+  .header { background: #0f172a; color: #fff; padding: 18px 28px; display: flex; justify-content: space-between; align-items: center; }
+  .header-left h1 { font-size: 18px; font-weight: 700; }
+  .header-left p { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+  .header-right { font-size: 12px; color: #94a3b8; }
+  .header-right strong { color: #60a5fa; }
+
+  .main { padding: 20px 28px; display: grid; grid-template-columns: 340px 1fr; gap: 16px; }
+
+  /* LEFT: SIMULATOR PANEL */
+  .sim-panel { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .sim-title { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+  .sim-section { margin-bottom: 18px; }
+  .sim-section-label { font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9; }
+  .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .input-label { font-size: 13px; color: #475569; }
+  .input-wrap { display: flex; align-items: center; gap: 4px; }
+  .sim-input { width: 110px; padding: 5px 8px; border: 1.5px solid #e2e8f0; border-radius: 6px; font-size: 13px; font-family: inherit; text-align: right; outline: none; }
+  .sim-input:focus { border-color: #3b82f6; }
+  .input-unit { font-size: 12px; color: #94a3b8; }
+  .channel-toggle { display: flex; align-items: center; gap: 8px; }
+  .toggle-sw { width: 36px; height: 20px; background: #e2e8f0; border-radius: 10px; position: relative; cursor: pointer; transition: background 0.2s; }
+  .toggle-sw.on { background: #3b82f6; }
+  .toggle-knob { width: 16px; height: 16px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+  .toggle-sw.on .toggle-knob { left: 18px; }
+  .calc-btn { width: 100%; padding: 10px; background: #0f172a; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.15s; margin-top: 4px; }
+  .calc-btn:hover { background: #1e293b; }
+
+  /* RIGHT: RESULTS */
+  .results { display: flex; flex-direction: column; gap: 14px; }
+  .result-kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .result-kpi { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); text-align: center; }
+  .result-kpi.highlight { background: #0f172a; color: #fff; }
+  .result-kpi.highlight .kpi-lbl { color: #94a3b8; }
+  .kpi-lbl { font-size: 12px; color: #64748b; margin-bottom: 6px; }
+  .kpi-val { font-size: 22px; font-weight: 800; color: #0f172a; }
+  .result-kpi.highlight .kpi-val { color: #60a5fa; }
+  .kpi-note { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+  .result-kpi.highlight .kpi-note { color: #64748b; }
+
+  /* CHANNEL TABLE */
+  .ch-table-wrap { background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); overflow: hidden; }
+  .ch-table-header { padding: 14px 18px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+  .ch-table-title { font-size: 14px; font-weight: 700; }
+  .ch-table-sub { font-size: 12px; color: #94a3b8; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #f8fafc; font-size: 12px; color: #64748b; font-weight: 600; padding: 9px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+  tbody tr { border-bottom: 1px solid #f1f5f9; }
+  tbody tr:hover { background: #f8fafc; }
+  tbody td { padding: 10px 14px; font-size: 13px; }
+  .roi-good { color: #15803d; font-weight: 700; }
+  .roi-bad { color: #dc2626; font-weight: 700; }
+  .roi-bar-wrap { width: 80px; height: 6px; background: #e2e8f0; border-radius: 3px; display: inline-block; vertical-align: middle; margin-right: 6px; }
+  .roi-bar-fill { height: 100%; border-radius: 3px; background: #3b82f6; }
+
+  /* SCENARIO TAGS */
+  .scenario-row { background: #fff; border-radius: 10px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .scenario-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
+  .scenario-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .stag { padding: 5px 12px; border-radius: 16px; border: 1.5px solid #e2e8f0; font-size: 12px; cursor: pointer; color: #475569; transition: all 0.15s; }
+  .stag.active { background: #0f172a; color: #fff; border-color: #0f172a; }
+  .stag:hover:not(.active) { border-color: #94a3b8; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>오키뷰티 (OKEE BEAUTY) · 월 마감 ROI 시뮬레이션</h1>
+    <p>채널별 광고비 · 매출 · 수익성 분석 | A-2. 마케팅 ROI 자동 계산</p>
+  </div>
+  <div class="header-right">시뮬레이션 기준월: <strong>2026년 04월</strong></div>
+</div>
+
+<div class="main">
+  <!-- LEFT: INPUT PANEL -->
+  <div class="sim-panel">
+    <div class="sim-title">⚙️ 시나리오 설정</div>
+
+    <div class="scenario-row" style="margin-bottom:14px;padding:10px 14px;">
+      <div class="scenario-title">빠른 시나리오 선택</div>
+      <div class="scenario-tags">
+        <span class="stag active" onclick="setScenario('current', this)">현재 운영 기준</span>
+        <span class="stag" onclick="setScenario('optimized', this)">최적화 시나리오</span>
+        <span class="stag" onclick="setScenario('growth', this)">성장 공격 모드</span>
+      </div>
+    </div>
+
+    <div class="sim-section">
+      <div class="sim-section-label">📦 매출 설정</div>
+      <div class="input-row">
+        <span class="input-label">월 총 매출</span>
+        <div class="input-wrap"><input class="sim-input" id="totalRevenue" value="42000000" type="number"><span class="input-unit">원</span></div>
+      </div>
+      <div class="input-row">
+        <span class="input-label">평균 상품 마진율</span>
+        <div class="input-wrap"><input class="sim-input" id="marginRate" value="62" type="number"><span class="input-unit">%</span></div>
+      </div>
+    </div>
+
+    <div class="sim-section">
+      <div class="sim-section-label">📣 광고비 설정</div>
+      <div class="input-row">
+        <span class="input-label">자사몰 광고비</span>
+        <div class="input-wrap"><input class="sim-input" id="adJasa" value="800000" type="number"><span class="input-unit">원</span></div>
+      </div>
+      <div class="input-row">
+        <span class="input-label">스마트스토어</span>
+        <div class="input-wrap"><input class="sim-input" id="adSmart" value="1200000" type="number"><span class="input-unit">원</span></div>
+      </div>
+      <div class="input-row">
+        <span class="input-label">쿠팡 로켓 광고</span>
+        <div class="input-wrap"><input class="sim-input" id="adCoupang" value="2400000" type="number"><span class="input-unit">원</span></div>
+      </div>
+      <div class="input-row">
+        <span class="input-label">Meta / 인스타 광고</span>
+        <div class="input-wrap"><input class="sim-input" id="adMeta" value="1800000" type="number"><span class="input-unit">원</span></div>
+      </div>
+      <div class="input-row">
+        <span class="input-label">검색광고 (네이버)</span>
+        <div class="input-wrap"><input class="sim-input" id="adSearch" value="900000" type="number"><span class="input-unit">원</span></div>
+      </div>
+    </div>
+
+    <div class="sim-section">
+      <div class="sim-section-label">💼 운영비 설정</div>
+      <div class="input-row">
+        <span class="input-label">물류·포장비</span>
+        <div class="input-wrap"><input class="sim-input" id="costLogistic" value="3200000" type="number"><span class="input-unit">원</span></div>
+      </div>
+      <div class="input-row">
+        <span class="input-label">인건비 (마케팅)</span>
+        <div class="input-wrap"><input class="sim-input" id="costLabor" value="5500000" type="number"><span class="input-unit">원</span></div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">📊 ROI 계산하기</button>
+  </div>
+
+  <!-- RIGHT: RESULTS -->
+  <div class="results">
+    <div class="result-kpi-row">
+      <div class="result-kpi highlight">
+        <div class="kpi-lbl">총 광고 ROI</div>
+        <div class="kpi-val" id="totalROI">–</div>
+        <div class="kpi-note" id="roiNote">계산 후 표시</div>
+      </div>
+      <div class="result-kpi">
+        <div class="kpi-lbl">총 광고비</div>
+        <div class="kpi-val" id="totalAdCost">–</div>
+        <div class="kpi-note" id="adCostNote">매출 대비 –</div>
+      </div>
+      <div class="result-kpi">
+        <div class="kpi-lbl">월 순이익 (추정)</div>
+        <div class="kpi-val" id="netProfit">–</div>
+        <div class="kpi-note" id="netNote">마진 – 비용</div>
+      </div>
+    </div>
+
+    <div class="ch-table-wrap">
+      <div class="ch-table-header">
+        <span class="ch-table-title">채널별 광고 효율 분석</span>
+        <span class="ch-table-sub">채널별 ROAS · 전환비용 · 효율 등급</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>채널</th>
+            <th>광고비</th>
+            <th>기여 매출 (추정)</th>
+            <th>ROAS</th>
+            <th>효율</th>
+            <th>광고비 비중</th>
+            <th>등급</th>
+          </tr>
+        </thead>
+        <tbody id="channelTbody"></tbody>
+      </table>
+    </div>
+
+    <div class="ch-table-wrap">
+      <div class="ch-table-header">
+        <span class="ch-table-title">AI 자동 인사이트</span>
+        <span class="ch-table-sub">최적화 제안 · 예산 재배분 가이드</span>
+      </div>
+      <div id="insightBox" style="padding:14px 18px; font-size:13px; line-height:1.7; color:#334155;">
+        계산하기 버튼을 클릭하면 AI 인사이트가 자동 생성됩니다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:10px;font-size:11px;color:#cbd5e1;">OKEE BEAUTY · ROI 시뮬레이션 | GLO:UP AI 운영 진단 — 데모 시각화</div>
+
+<script>
+const channelData = [
+  { name: '자사몰', inputId: 'adJasa', roasBase: 4.2, color: '#8b5cf6' },
+  { name: '스마트스토어', inputId: 'adSmart', roasBase: 3.8, color: '#3b82f6' },
+  { name: '쿠팡', inputId: 'adCoupang', roasBase: 3.1, color: '#ef4444' },
+  { name: 'Meta/인스타', inputId: 'adMeta', roasBase: 2.6, color: '#f59e0b' },
+  { name: '검색광고', inputId: 'adSearch', roasBase: 5.1, color: '#10b981' },
+];
+
+function fmt(n) {
+  if (n >= 1000000) return '₩' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '₩' + Math.round(n/1000) + 'K';
+  return '₩' + n;
+}
+
+function gradeColor(roas) {
+  if (roas >= 4) return { grade: 'S (최우수)', cls: '#15803d', bg: '#dcfce7' };
+  if (roas >= 3) return { grade: 'A (우수)', cls: '#1d4ed8', bg: '#dbeafe' };
+  if (roas >= 2) return { grade: 'B (보통)', cls: '#d97706', bg: '#fef9c3' };
+  return { grade: 'C (개선필요)', cls: '#dc2626', bg: '#fee2e2' };
+}
+
+function calculate() {
+  const revenue = +document.getElementById('totalRevenue').value;
+  const margin = +document.getElementById('marginRate').value / 100;
+  const logistic = +document.getElementById('costLogistic').value;
+  const labor = +document.getElementById('costLabor').value;
+
+  let totalAd = 0;
+  const chResults = channelData.map(ch => {
+    const ad = +document.getElementById(ch.inputId).value;
+    totalAd += ad;
+    const contribRevenue = ad * ch.roasBase;
+    const roas = ch.roasBase;
+    return { ...ch, ad, contribRevenue, roas };
+  });
+
+  const grossProfit = revenue * margin;
+  const netProfit = grossProfit - totalAd - logistic - labor;
+  const totalROI = ((grossProfit - totalAd) / totalAd * 100).toFixed(1);
+
+  document.getElementById('totalROI').textContent = totalROI + '%';
+  document.getElementById('roiNote').textContent = parseFloat(totalROI) >= 0 ? '광고 수익 플러스' : '광고비 초과 손실';
+  document.getElementById('totalAdCost').textContent = fmt(totalAd);
+  document.getElementById('adCostNote').textContent = '매출 대비 ' + (totalAd/revenue*100).toFixed(1) + '%';
+  document.getElementById('netProfit').textContent = fmt(netProfit);
+  document.getElementById('netNote').textContent = netProfit >= 0 ? '수익 발생' : '손실 발생';
+
+  // Channel table
+  const tbody = document.getElementById('channelTbody');
+  tbody.innerHTML = chResults.map(ch => {
+    const g = gradeColor(ch.roas);
+    const pct = (ch.ad / totalAd * 100).toFixed(1);
+    const barW = Math.min(100, ch.roas / 6 * 100);
+    return `<tr>
+      <td style="font-weight:600;color:#0f172a;">${ch.name}</td>
+      <td>${fmt(ch.ad)}</td>
+      <td>${fmt(ch.contribRevenue)}</td>
+      <td style="font-weight:700;color:${ch.roas>=3?'#15803d':'#d97706'}">${ch.roas.toFixed(1)}x</td>
+      <td><div class="roi-bar-wrap"><div class="roi-bar-fill" style="width:${barW}%;background:${ch.color}"></div></div></td>
+      <td style="color:#64748b;">${pct}%</td>
+      <td><span style="background:${g.bg};color:${g.cls};padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;">${g.grade}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Insight
+  const bestCh = chResults.reduce((a,b) => a.roas>b.roas?a:b);
+  const worstCh = chResults.reduce((a,b) => a.roas<b.roas?a:b);
+  document.getElementById('insightBox').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="background:#dcfce7;border-radius:8px;padding:10px 14px;">
+        🏆 <strong>최고 효율 채널: ${bestCh.name}</strong> (ROAS ${bestCh.roas}x) — 현재 예산 대비 추가 투자 시 ROI 극대화 가능
+      </div>
+      <div style="background:#fee2e2;border-radius:8px;padding:10px 14px;">
+        ⚠️ <strong>효율 개선 필요: ${worstCh.name}</strong> (ROAS ${worstCh.roas}x) — 크리에이티브 A/B 테스트 또는 타겟 재설정 권장
+      </div>
+      <div style="background:#dbeafe;border-radius:8px;padding:10px 14px;">
+        💡 <strong>예산 재배분 제안</strong> — ${worstCh.name} 예산 ${fmt(Math.round(worstCh.ad*0.2))} 축소 → ${bestCh.name}으로 이동 시 월 순이익 약 <strong>${fmt(Math.round(worstCh.ad*0.2*(bestCh.roas-worstCh.roas)*margin))} 개선</strong> 예상
+      </div>
+      <div style="background:#f8fafc;border-radius:8px;padding:10px 14px;color:#64748b;">
+        📊 <strong>총 광고비 비중:</strong> 월 매출 대비 ${(totalAd/revenue*100).toFixed(1)}% · 권장 기준(15~25%) ${totalAd/revenue <= 0.25 ? '✅ 적정 범위' : '⚠️ 초과 — 효율화 필요'}
+      </div>
+    </div>`;
+}
+
+function setScenario(type, el) {
+  document.querySelectorAll('.stag').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  const scenarios = {
+    current:    { totalRevenue: 42000000, marginRate: 62, adJasa: 800000, adSmart: 1200000, adCoupang: 2400000, adMeta: 1800000, adSearch: 900000, costLogistic: 3200000, costLabor: 5500000 },
+    optimized:  { totalRevenue: 48000000, marginRate: 65, adJasa: 1200000, adSmart: 1000000, adCoupang: 2000000, adMeta: 1400000, adSearch: 1400000, costLogistic: 3400000, costLabor: 5500000 },
+    growth:     { totalRevenue: 65000000, marginRate: 60, adJasa: 2000000, adSmart: 2000000, adCoupang: 4000000, adMeta: 3000000, adSearch: 2000000, costLogistic: 5000000, costLabor: 5500000 },
+  };
+  const s = scenarios[type];
+  Object.keys(s).forEach(k => { const el = document.getElementById(k); if(el) el.value = s[k]; });
+  calculate();
+}
+
+calculate();
+</script>
+</body>
+</html>
