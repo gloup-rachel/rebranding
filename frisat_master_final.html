@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRISAT — Final Master Logo System</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --point: #6C31D4;
+    --point-deep: #4A1F9C;
+    --base-bg: #F9F8FF;
+    --blob-1: #8390CA;
+    --blob-2: #C0E0DB;
+    --blob-3: #F7A7A6;
+    --headline: #1A1238;
+    --body: #8A87B8;
+    --tint: #E8DFFF;
+    --line: #E8E5F5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{
+    background:var(--base-bg);color:var(--headline);
+    font-family:'Pretendard',sans-serif;-webkit-font-smoothing:antialiased;
+  }
+
+  .page{max-width:1280px;margin:0 auto;padding:64px 48px 96px;position:relative}
+  .page::before{
+    content:"";position:absolute;top:80px;right:-100px;width:480px;height:480px;
+    border-radius:50%;background:var(--blob-1);opacity:.10;filter:blur(80px);z-index:0;pointer-events:none;
+  }
+  .page::after{
+    content:"";position:absolute;bottom:200px;left:-120px;width:420px;height:420px;
+    border-radius:50%;background:var(--blob-3);opacity:.08;filter:blur(80px);z-index:0;pointer-events:none;
+  }
+  .page > *{position:relative;z-index:1}
+
+  /* ============ Master Header ============ */
+  .master-head{
+    text-align:center;padding:32px 0 48px;
+    border-bottom:1px solid var(--line);margin-bottom:48px;
+  }
+  .master-head .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--point);font-weight:700;margin-bottom:18px;
+  }
+  .master-head h1{
+    font-family:'Pretendard',sans-serif;font-weight:800;font-size:72px;
+    line-height:1;letter-spacing:-.04em;color:var(--headline);margin-bottom:14px;
+  }
+  .master-head h1 em{font-style:normal;color:var(--point);font-weight:900}
+  .master-head .sub{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
+    color:var(--body);text-transform:uppercase;margin-bottom:22px;
+  }
+  .master-head .meta-row{
+    display:flex;justify-content:center;gap:14px;flex-wrap:wrap;
+  }
+  .master-head .meta-row .badge{
+    display:inline-block;padding:6px 14px;background:var(--tint);
+    color:var(--point);border-radius:4px;font-weight:700;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;
+  }
+  .master-head .meta-row .badge.dark{background:var(--headline);color:#fff}
+
+  /* ============ Section Anchor ============ */
+  .anchor-row{
+    display:flex;justify-content:center;gap:24px;flex-wrap:wrap;
+    margin-bottom:48px;padding:18px;
+    background:#FFFFFF;border:1px solid var(--line);border-radius:8px;
+  }
+  .anchor-row a{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
+    color:var(--body);text-transform:uppercase;text-decoration:none;
+    padding:8px 14px;border-radius:4px;transition:all .2s;font-weight:600;
+  }
+  .anchor-row a:hover{background:var(--tint);color:var(--point)}
+  .anchor-row a strong{color:var(--point);margin-right:4px}
+
+  /* ============ Section ============ */
+  .section{margin-bottom:64px;scroll-margin-top:24px}
+  .sec-head{margin-bottom:28px}
+  .sec-num{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;
+    color:var(--point);text-transform:uppercase;font-weight:700;margin-bottom:6px;
+  }
+  .sec-title{
+    font-family:'Pretendard',sans-serif;font-weight:800;font-size:32px;
+    letter-spacing:-.025em;color:var(--headline);line-height:1.2;margin-bottom:8px;
+  }
+  .sec-title em{font-style:normal;color:var(--point)}
+  .sec-desc{
+    font-size:13px;color:var(--body);line-height:1.6;max-width:640px;
+  }
+  .sec-desc strong{color:var(--point)}
+
+  /* ============ Lockup (shared base) ============ */
+  .lockup{display:flex;flex-direction:column;gap:16px}
+  .lockup .row-chips{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:7px;width:100%;
+  }
+  .lockup .chip{
+    aspect-ratio:1/1;width:100%;border-radius:5px;
+    border:1px solid rgba(26,18,56,.05);
+  }
+  .lockup .chip.c1{background:var(--blob-2)}
+  .lockup .chip.c2{background:var(--blob-3)}
+  .lockup .chip.c3{background:var(--blob-1)}
+  .lockup .chip.c4{background:var(--tint)}
+  .lockup .chip.selected{
+    background:var(--point);
+    box-shadow:0 0 0 2px #fff,0 0 0 4px var(--point),0 6px 16px rgba(108,49,212,.4);
+    transform:scale(1.08);
+    display:flex;align-items:center;justify-content:center;border:none;
+  }
+  .lockup .chip.selected svg{width:60%;height:60%}
+  .lockup .row-text{
+    display:grid;grid-template-columns:repeat(8,1fr);
+    align-items:center;width:100%;text-align:center;
+  }
+  .lockup .row-text > *{line-height:1}
+  .lockup .bracket{font-family:'Pretendard',sans-serif;color:var(--point)}
+  .lockup .letter{font-family:'Pretendard',sans-serif;color:var(--headline)}
+  .lockup .letter.acc{color:var(--point)}
+
+  /* ============ MAIN HERO (B안) ============ */
+  .hero-card{
+    background:linear-gradient(135deg,#FFFFFF 0%,var(--tint) 100%);
+    border:2px solid var(--point);border-radius:16px;
+    padding:64px 48px 56px;position:relative;overflow:hidden;
+    box-shadow:0 16px 48px rgba(108,49,212,.15);
+    text-align:center;
+  }
+  .hero-card::before{
+    content:"";position:absolute;top:-100px;right:-100px;width:320px;height:320px;
+    border-radius:50%;background:var(--point);opacity:.10;filter:blur(80px);
+  }
+  .hero-card::after{
+    content:"";position:absolute;bottom:-80px;left:-80px;width:280px;height:280px;
+    border-radius:50%;background:var(--blob-3);opacity:.18;filter:blur(70px);
+  }
+  .hero-card .hero-label{
+    position:relative;z-index:2;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.25em;
+    color:var(--point);text-transform:uppercase;font-weight:700;margin-bottom:16px;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+  }
+  .hero-card .hero-label::before,
+  .hero-card .hero-label::after{
+    content:"";display:block;width:30px;height:1px;background:var(--point);
+  }
+  .hero-card .hero-title{
+    position:relative;z-index:2;
+    font-family:'Pretendard',sans-serif;font-weight:800;font-size:18px;
+    color:var(--headline);margin-bottom:48px;letter-spacing:-.01em;
+  }
+  .hero-stage{
+    position:relative;z-index:2;
+    display:flex;justify-content:center;padding:24px 0 32px;
+  }
+  .hero-stage .lockup{width:480px}
+  .hero-stage .bracket{font-weight:300;font-size:54px}
+  .hero-stage .letter{font-weight:800;font-size:44px}
+  .hero-stage .row-chips{gap:10px}
+  .hero-stage .chip{border-radius:7px}
+  .hero-stage .chip.selected{
+    box-shadow:0 0 0 3px #fff,0 0 0 6px var(--point),0 12px 28px rgba(108,49,212,.5);
+  }
+  .hero-foot{
+    position:relative;z-index:2;
+    display:flex;justify-content:center;gap:32px;flex-wrap:wrap;
+    padding-top:32px;border-top:1px solid rgba(108,49,212,.15);
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
+    color:var(--body);text-transform:uppercase;
+  }
+  .hero-foot .item strong{color:var(--point);font-weight:700;margin-right:6px}
+
+  /* ============ Card grid ============ */
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+  @media(max-width:900px){
+    .grid-3,.grid-2{grid-template-columns:1fr}
+  }
+
+  .card{
+    background:#FFFFFF;border:1px solid var(--line);border-radius:8px;
+    padding:40px 32px 28px;position:relative;min-height:420px;
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .card.recommended{
+    border:2px solid var(--point);
+    box-shadow:0 8px 24px rgba(108,49,212,.10);
+  }
+  .card.secondary{border:1.5px dashed var(--blob-1)}
+
+  .card .ambient{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;opacity:.14}
+  .card .ambient.tl{top:-60px;left:-60px;width:200px;height:200px;background:var(--blob-1)}
+  .card .ambient.br{bottom:-60px;right:-60px;width:180px;height:180px;background:var(--blob-3)}
+  .card .ambient.tr{top:-40px;right:-40px;width:160px;height:160px;background:var(--blob-2)}
+
+  .tag{
+    position:absolute;top:18px;left:20px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;
+    color:var(--body);text-transform:uppercase;z-index:2;
+  }
+  .tag .num{color:var(--point);margin-right:6px;font-weight:700;background:var(--tint);padding:2px 6px;border-radius:3px}
+  .meta{
+    position:absolute;top:18px;right:20px;
+    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;
+    color:var(--body);text-transform:uppercase;z-index:2;
+  }
+
+  .stage{
+    flex:1;display:flex;align-items:center;justify-content:center;
+    padding:56px 0 36px;position:relative;z-index:2;
+  }
+  .stage .lockup{width:280px}
+
+  .footer-card{
+    border-top:1px solid var(--line);padding-top:14px;margin-top:8px;
+    position:relative;z-index:2;
+  }
+  .title{font-family:'Pretendard',sans-serif;font-size:14px;letter-spacing:-.01em;font-weight:700;color:var(--headline);margin-bottom:4px}
+  .desc{font-size:11px;color:var(--body);line-height:1.55;font-weight:400}
+  .specs{
+    background:var(--base-bg);border:1px solid var(--line);
+    border-radius:6px;padding:12px 14px;margin-top:12px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7;
+    color:var(--body);
+  }
+  .specs strong{color:var(--point);font-weight:700}
+  .specs .row{display:flex;justify-content:space-between;gap:8px}
+  .keyword{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:8px;
+    letter-spacing:.16em;color:var(--point);background:var(--tint);
+    padding:2px 7px;border-radius:3px;text-transform:uppercase;font-weight:700;margin-top:6px;
+  }
+
+  /* ============ V1 / V2 / V3 Versions ============ */
+  /* V1 — Main Bold (B layout) */
+  .v1 .bracket{font-weight:300;font-size:32px}
+  .v1 .letter{font-weight:800;font-size:26px}
+
+  /* V2 — Light (B layout) */
+  .v2 .bracket{font-weight:200;font-size:32px}
+  .v2 .letter{font-weight:300;font-size:26px;letter-spacing:.02em}
+
+  /* V3 — App Icon (B layout) */
+  .v3 .frame{
+    background:#FFFFFF;border:1.5px solid var(--line);border-radius:14px;
+    padding:28px 26px;
+    box-shadow:0 8px 32px rgba(108,49,212,.10);
+    position:relative;
+    width:300px;
+  }
+  .v3 .frame::before{
+    content:"";position:absolute;top:12px;right:12px;
+    width:6px;height:6px;border-radius:50%;background:var(--point);opacity:.6;
+  }
+  .v3 .lockup{width:100%}
+  .v3 .bracket{font-weight:300;font-size:32px}
+  .v3 .letter{font-weight:800;font-size:26px}
+
+  /* ============ A1 — Text Top Secondary ============ */
+  .a1-stage .lockup{width:280px}
+  .a1 .bracket{font-weight:300;font-size:32px}
+  .a1 .letter{font-weight:800;font-size:26px}
+
+  /* ============ Variations ============ */
+  /* VAR-A : Mono */
+  .va .bracket{font-weight:300;font-size:30px;color:var(--headline)}
+  .va .letter{font-weight:800;font-size:24px;color:var(--headline)}
+  .va .chip{background:var(--headline) !important;opacity:.18;box-shadow:none !important;transform:none !important}
+  .va .chip.selected{background:var(--headline) !important;opacity:1;box-shadow:0 0 0 2px #fff,0 0 0 3px var(--headline) !important}
+  .va .chip.selected svg path{fill:#fff;fill-opacity:.5}
+
+  /* VAR-B : Reverse */
+  .vb .stage{background:var(--headline);border-radius:8px;margin:-1px;padding:48px 0}
+  .vb .bracket{font-weight:300;font-size:30px;color:#C8B5FF}
+  .vb .letter{font-weight:800;font-size:24px;color:#fff}
+  .vb .letter.acc{color:#C8B5FF}
+  .vb .chip{border:1px solid rgba(255,255,255,.1)}
+  .vb .chip.selected{box-shadow:0 0 0 2px var(--headline),0 0 0 4px var(--point),0 6px 16px rgba(108,49,212,.6) !important}
+
+  /* VAR-C : Compact Inline */
+  .vc-lockup{display:flex;align-items:center;gap:10px}
+  .vc-mini-chips{display:flex;gap:3px}
+  .vc-mini-chips .mc{width:8px;height:8px;border-radius:2px}
+  .vc-mini-chips .mc.c1{background:var(--blob-2)}
+  .vc-mini-chips .mc.c2{background:var(--blob-3)}
+  .vc-mini-chips .mc.selected{background:var(--point);transform:scale(1.3)}
+  .vc-mini-chips .mc.c3{background:var(--blob-1)}
+  .vc-mini-chips .mc.c4{background:var(--tint)}
+  .vc-text{display:flex;align-items:center;gap:4px;font-family:'Pretendard',sans-serif}
+  .vc-text .br{font-weight:300;font-size:24px;color:var(--point)}
+  .vc-text .lt{font-weight:800;font-size:20px;color:var(--headline);letter-spacing:.04em}
+  .vc-text .lt.acc{color:var(--point)}
+
+  /* VAR-D : Favicon */
+  .vd-mini{
+    width:120px;height:120px;background:var(--point);border-radius:22px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 12px 32px rgba(108,49,212,.3);position:relative;
+  }
+  .vd-mini::before{
+    content:"";position:absolute;top:10px;right:10px;
+    width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);
+  }
+  .vd-mini .core{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .vd-mini .br-row{
+    font-family:'Pretendard',sans-serif;font-weight:300;color:#fff;font-size:24px;
+    display:flex;gap:2px;align-items:center;
+  }
+  .vd-mini .br-row .star{width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center}
+  .vd-mini .br-row .star svg{width:100%;height:100%}
+  .vd-mini .chip-row{display:flex;gap:3px}
+  .vd-mini .chip-row .ch{width:6px;height:6px;border-radius:1.5px;background:rgba(255,255,255,.4)}
+  .vd-mini .chip-row .ch.on{background:#fff;box-shadow:0 0 0 1px #fff}
+
+  /* ============ Color Reference ============ */
+  .palette-ref{
+    background:#FFFFFF;border:1px solid var(--line);border-radius:8px;
+    padding:28px 32px;
+  }
+  .palette-ref .label{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
+    color:var(--body);text-transform:uppercase;margin-bottom:18px;font-weight:700;
+  }
+  .palette-ref .label strong{color:var(--point)}
+  .ref-row{display:flex;gap:12px;flex-wrap:wrap}
+  .ref-chip{
+    display:flex;align-items:center;gap:10px;padding:10px 14px;
+    background:var(--base-bg);border-radius:6px;border:1px solid var(--line);
+  }
+  .ref-color{width:24px;height:24px;border-radius:4px;border:1px solid rgba(26,18,56,.06)}
+  .ref-info{display:flex;flex-direction:column;gap:1px}
+  .ref-name{font-size:11px;font-weight:700;color:var(--headline)}
+  .ref-hex{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--body);letter-spacing:.04em}
+
+  /* ============ Decision Map ============ */
+  .decision{
+    background:#FFFFFF;border:1px solid var(--line);border-radius:8px;
+    padding:32px 36px;position:relative;overflow:hidden;
+  }
+  .decision::before{
+    content:"";position:absolute;top:-100px;right:-100px;width:280px;height:280px;
+    border-radius:50%;background:var(--blob-2);opacity:.15;filter:blur(60px);
+  }
+  .dec-grid{
+    display:grid;grid-template-columns:80px 1.4fr 1.4fr 1.6fr;
+    font-size:12px;position:relative;
+  }
+  .dec-grid > div{padding:14px 12px;border-top:1px solid var(--line);color:var(--headline)}
+  .dec-grid .head{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--body);border-top:none;font-weight:700}
+  .dec-grid .opt-num{font-family:'JetBrains Mono',monospace;color:var(--point);font-weight:700}
+  .dec-grid .opt-name{font-weight:700;font-size:13px;color:var(--headline)}
+  .dec-grid .body-text{color:var(--body)}
+  .dec-grid .opt-num.main{background:var(--point);color:#fff;text-align:center;border-radius:3px;width:fit-content;padding:3px 8px}
+
+  footer{
+    margin-top:48px;display:flex;justify-content:space-between;align-items:center;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
+    color:var(--body);text-transform:uppercase;padding-top:24px;border-top:1px solid var(--line);
+  }
+  footer .point{color:var(--point);font-weight:700}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============================================
+       MASTER HEADER
+       ============================================ -->
+  <div class="master-head">
+    <div class="eyebrow">Final Master · Logo System Document</div>
+    <h1>FRISAT <em>·</em> Master</h1>
+    <div class="sub">AX Inhouse Marketing Brand · Final v1.0</div>
+    <div class="meta-row">
+      <span class="badge">Main: B · Text Bottom</span>
+      <span class="badge">Secondary: A · Text Top</span>
+      <span class="badge dark">+ 4 Variations</span>
+    </div>
+  </div>
+
+  <!-- ============================================
+       NAV ANCHOR
+       ============================================ -->
+  <div class="anchor-row">
+    <a href="#main"><strong>01</strong>Main Signature</a>
+    <a href="#core"><strong>02</strong>Core Versions</a>
+    <a href="#secondary"><strong>03</strong>Secondary (A)</a>
+    <a href="#variations"><strong>04</strong>Variations</a>
+    <a href="#palette"><strong>05</strong>Palette</a>
+    <a href="#decision"><strong>06</strong>Use Map</a>
+  </div>
+
+  <!-- ============================================
+       SECTION 01 : MAIN HERO
+       ============================================ -->
+  <div class="section" id="main">
+    <div class="sec-head">
+      <div class="sec-num">— 01</div>
+      <div class="sec-title">Main Signature <em>·</em> B · Text Bottom</div>
+      <p class="sec-desc">FRISAT 브랜드의 <strong>최종 메인 시그니처</strong>. 모든 공식 커뮤니케이션의 기본 락업. 칩셋 상단 + [ FRISAT ] 텍스트 하단의 구조로, <strong>"프리셋 = 즐겨찾기 · 세팅값 · 이식"</strong>의 핵심 메타포가 시각적 메인이 되고, 워드마크가 그것을 완성한다.</p>
+    </div>
+
+    <div class="hero-card">
+      <div class="hero-label">Final Master · Primary Logo</div>
+      <div class="hero-title">FRISAT — AI 인하우스 마케팅 시스템 이식 서비스</div>
+      <div class="hero-stage">
+        <div class="lockup">
+          <div class="row-chips">
+            <div class="chip c1"></div>
+            <div class="chip c2"></div>
+            <div class="chip selected">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2l2.6 6.5L21 9.2l-5 4.4 1.6 6.7L12 16.8 6.4 20.3 8 13.6 3 9.2l6.4-.7z" fill="white" fill-opacity="0.4"/>
+              </svg>
+            </div>
+            <div class="chip c3"></div>
+            <div class="chip c4"></div>
+          </div>
+          <div class="row-text">
+            <span class="bracket">[</span>
+            <span class="letter">F</span>
+            <span class="letter">R</span>
+            <span class="letter">I</span>
+            <span class="letter acc">S</span>
+            <span class="letter">A</span>
+            <span class="letter">T</span>
+            <span class="bracket">]</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-foot">
+        <div class="item"><strong>Font</strong>Pretendard 800 / 300</div>
+        <div class="item"><strong>Layout</strong>Chips Top · Text Bottom</div>
+        <div class="item"><strong>Point</strong>#6C31D4</div>
+        <div class="item"><strong>Use</strong>Default Primary</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 02 : CORE 3 VERSIONS
+       ============================================ -->
+  <div class="section" id="core">
+    <div class="sec-head">
+      <div class="sec-num">— 02</div>
+      <div class="sec-title">Core Versions <em>·</em> V1 · V2 · V3</div>
+      <p class="sec-desc">메인 B안 락업의 3가지 코어 베리에이션. <strong>V1(메인)</strong>·<strong>V2(라이트)</strong>·<strong>V3(앱 아이콘)</strong>이 동일한 격자 시스템 위에서 작동하여 일관성을 유지한다.</p>
+    </div>
+
+    <div class="grid-3">
+
+      <!-- V1 -->
+      <div class="card recommended v1">
+        <div class="ambient tl"></div>
+        <div class="tag"><span class="num">V1</span>Main Signature</div>
+        <div class="meta">Bold · Default</div>
+        <div class="stage">
+          <div class="lockup">
+            <div class="row-chips">
+              <div class="chip c1"></div>
+              <div class="chip c2"></div>
+              <div class="chip selected"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.5L21 9.2l-5 4.4 1.6 6.7L12 16.8 6.4 20.3 8 13.6 3 9.2l6.4-.7z" fill="white" fill-opacity="0.4"/></svg></div>
+              <div class="chip c3"></div>
+              <div class="chip c4"></div>
+            </div>
+            <div class="row-text">
+              <span class="bracket">[</span>
+              <span class="letter">F</span><span class="letter">R</span><span class="letter">I</span>
+              <span class="letter acc">S</span><span class="letter">A</span><span class="letter">T</span>
+              <span class="bracket">]</span>
+            </div>
+          </div>
+        </div>
+        <div class="footer-card">
+          <div class="title">메인 시그니처</div>
+          <p class="desc">기본 락업. 모든 공식 커뮤니케이션의 첫 선택.</p>
+          <div class="specs">
+            <div class="row"><span>FONT</span><strong>Pretendard 800</strong></div>
+            <div class="row"><span>USE</span><strong>Default · Primary</strong></div>
+          </div>
+          <span class="keyword">PRIMARY · DEFAULT</span>
+        </div>
+      </div>
+
+      <!-- V2 -->
+      <div class="card v2">
+        <div class="ambient br"></div>
+        <div class="tag"><span class="num">V2</span>Light Variant</div>
+        <div class="meta">Refined · Editorial</div>
+        <div class="stage">
+          <div class="lockup">
+            <div class="row-chips">
+              <div class="chip c1"></div>
+              <div class="chip c2"></div>
+              <div class="chip selected"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.5L21 9.2l-5 4.4 1.6 6.7L12 16.8 6.4 20.3 8 13.6 3 9.2l6.4-.7z" fill="white" fill-opacity="0.4"/></svg></div>
+              <div class="chip c3"></div>
+              <div class="chip c4"></div>
+            </div>
+            <div class="row-text">
+              <span class="bracket">[</span>
+              <span class="letter">F</span><span class="letter">R</span><span class="letter">I</span>
+              <span class="letter acc">S</span><span class="letter">A</span><span class="letter">T</span>
+              <span class="bracket">]</span>
+            </div>
+          </div>
+        </div>
+        <div class="footer-card">
+          <div class="title">라이트 베리에이션</div>
+          <p class="desc">에디토리얼·매거진 톤의 라이트 굵기 버전.</p>
+          <div class="specs">
+            <div class="row"><span>FONT</span><strong>Pretendard 300</strong></div>
+            <div class="row"><span>USE</span><strong>Editorial · Print</strong></div>
+          </div>
+          <span class="keyword">LIGHT · EDITORIAL</span>
+        </div>
+      </div>
+
+      <!-- V3 -->
+      <div class="card v3">
+        <div class="ambient tr"></div>
+        <div class="tag"><span class="num">V3</span>App Icon</div>
+        <div class="meta">Boxed · Standalone</div>
+        <div class="stage">
+          <div class="frame">
+            <div class="lockup">
+              <div class="row-chips">
+                <div class="chip c1"></div>
+                <div class="chip c2"></div>
+                <div class="chip selected"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.5L21 9.2l-5 4.4 1.6 6.7L12 16.8 6.4 20.3 8 13.6 3 9.2l6.4-.7z" fill="white" fill-opacity="0.4"/></svg></div>
+                <div class="chip c3"></div>
+                <div class="chip c4"></div>
+              </div>
+              <div class="row-text">
+                <span class="bracket">[</span>
+                <span class="letter">F</span><span class="letter">R</span><span class="letter">I</span>
+                <span class="letter acc">S</span><span class="letter">A</span><span class="letter">T</span>
+                <span class="bracket">]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-card">
+          <div class="title">앱 아이콘 / 인장</div>
+          <p class="desc">외곽 박스 + 활성 점. 단독 사용 시 안정감 확보.</p>
+          <div class="specs">
+            <div class="row"><span>FRAME</span><strong>1.5px · R14</strong></div>
+            <div class="row"><span>USE</span><strong>Standalone · Icon</strong></div>
+          </div>
+          <span class="keyword">STANDALONE · ICON</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 03 : SECONDARY A
+       ============================================ -->
+  <div class="section" id="secondary">
+    <div class="sec-head">
+      <div class="sec-num">— 03</div>
+      <div class="sec-title">Secondary <em>·</em> A · Text Top</div>
+      <p class="sec-desc">메인 B안의 보조 베리에이션. <strong>웹 헤더·명함·이메일 서명</strong>처럼 텍스트가 시선 진입점이 되어야 하는 환경에 한정 사용. 동일한 격자 시스템 위 텍스트와 칩셋의 순서만 반전.</p>
+    </div>
+
+    <div class="grid-2">
+
+      <!-- A1 : Text Top Standard -->
+      <div class="card secondary a1">
+        <div class="ambient tl"></div>
+        <div class="tag"><span class="num">A1</span>Text Top · Standard</div>
+        <div class="meta">For Text-First Environment</div>
+        <div class="stage a1-stage">
+          <div class="lockup">
+            <div class="row-text">
+              <span class="bracket">[</span>
+              <span class="letter">F</span><span class="letter">R</span><span class="letter">I</span>
+              <span class="letter acc">S</span><span class="letter">A</span><span class="letter">T</span>
+              <span class="bracket">]</span>
+            </div>
+            <div class="row-chips">
+              <div class="chip c1"></div>
+              <div class="chip c2"></div>
+              <div class="chip selected"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.5L21 9.2l-5 4.4 1.6 6.7L12 16.8 6.4 20.3 8 13.6 3 9.2l6.4-.7z" fill="white" fill-opacity="0.4"/></svg></div>
+              <div class="chip c3"></div>
+              <div class="chip c4"></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-card">
+          <div class="title">A1 — 텍스트 상단 표준형</div>
+          <p class="desc">텍스트가 첫 시선에 위치해야 하는 환경 전용 보조 베리에이션. 웹 헤더 좌측 정렬·문서 헤더·발표 자료 표지 등 가로 좁은 공간에서 가독성과 위계 안정성 확보.</p>
+          <div class="specs">
+            <div class="row"><span>FONT</span><strong>Pretendard 800 / 300</strong></div>
+            <div class="row"><span>USE</span><strong>Web Header · Document</strong></div>
+          </div>
+          <span class="keyword">SECONDARY · TEXT-FIRST</span>
+        </div>
+      </div>
+
+      <!-- A2 : Text Top + Container -->
+      <div class="card secondary a1">
+        <div class="ambient br"></div>
+        <div class="tag"><span class="num">A2</span>Text Top · Boxed</div>
+        <div class="meta">Stamp · Card · Sealed</div>
+        <div class="stage">
+          <div class="v3 frame" style="border:1.5px solid var(--line);border-radius:14px;padding:28px 26px;background:#FFFFFF;box-shadow:0 8px 32px rgba(108,49,212,.10);position:relative;width:300px;">
+            <div style="content:'';position:absolute;top:12px;right:12px;width:6px;height:6px;border-radius:50%;background:var(--point);opacity:.6;"></div>
+            <div class="lockup" style="width:100%">
+              <div class="row-text">
+                <span class="bracket" style="font-weight:300;font-size:32px">[</span>
+                <span class="letter" style="font-weight:800;font-size:26px">F</span>
+                <span class="letter" style="font-weight:800;font-size:26px">R</span>
+                <span class="letter" style="font-weight:800;font-size:26px">I</span>
+                <span class="letter acc" style="font-weight:800;font-size:26px">S</span>
+                <span class="letter" style="font-weight:800;font-size:26px">A</span>
+                <span class="letter" style="font-weight:800;font-size:26px">T</span>
+                <span class="bracket" style="font-weight:300;font-size:32px">]</span>
+              </div>
+              <div class="row-chips">
+                <div class="chip c1"></div>
+                <div class="chip c2"></div>
+                <div class="chip selected"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.5L21 9.2l-5 4.4 1.6 6.7L12 16.8 6.4 20.3 8 13.6 3 9.2l6.4-.7z" fill="white" fill-opacity="0.4"/></svg></div>
+                <div class="chip c3"></div>
+                <div class="chip c4"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-card">
+          <div class="title">A2 — 텍스트 상단 박스형</div>
+          <p class="desc">A1에 외곽 박스를 추가한 형태. 명함 인장·문서 헤더 인장·서류 도장처럼 단독 박스 단위가 필요할 때. V3와 동일한 박스 사양 유지로 시스템 일관성 확보.</p>
+          <div class="specs">
+            <div class="row"><span>FRAME</span><strong>1.5px · R14</strong></div>
+            <div class="row"><span>USE</span><strong>Stamp · Card</strong></div>
+          </div>
+          <span class="keyword">SECONDARY · BOXED</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 04 : VARIATIONS
+       ============================================ -->
+  <div class="section" id="variations">
+    <div class="sec-head">
+      <div class="sec-num">— 04</div>
+      <div class="sec-title">Variations <em>·</em> 4 Optional Extensions</div>
+      <p class="sec-desc">특수 환경 대응 베리에이션. 모두 <strong>메인 B안 락업</strong>(칩셋 상단 + 텍스트 하단)을 기반으로 한다. <strong>VAR-A·B는 필수</strong>(인쇄·다크모드 대응), VAR-C·D는 확장 옵션.</p>
+    </div>
+
+    <div class="grid-2">
+
+      <!-- VAR-A : Mono -->
+      <div class="card va">
+        <div class="ambient tl"></div>
+        <div class="tag"><span class="num">VAR-A</span>Monochrome</div>
+        <div class="meta">1-Color · Print · Required</div>
+        <div class="stage">
+          <div class="lockup">
+            <div class="row-chips">
+              <div class="chip c1"></div><div class="chip c2"></div>
+              <div class="chip selected"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.5L21 9.2l-5 4.4 1.6 6.7L12 16.8 6.4 20.3 8 13.6 3 9.2l6.4-.7z"/></svg></div>
+              <div class="chip c3"></div><div class="chip c4"></div>
+            </div>
+            <div class="row-text">
+              <span class="bracket">[</span>
+              <span class="letter">F</span><span class="letter">R</span><span class="letter">I</span>
+              <span class="letter">S</span><span class="letter">A</span><span class="letter">T</span>
+              <span class="bracket">]</span>
+            </div>
+          </div>
+        </div>
+        <div class="footer-card">
+          <div class="title">VAR-A · 모노크롬 (필수)</div>
+          <p class="desc">단일 컬러(딥 퍼플 다크). 흑백 출력·스탬프·각인·법적 문서·팩스 등 컬러 재현 불가능 환경 필수.</p>
+          <span class="keyword">PRINT · STAMP · LEGAL</span>
+        </div>
+      </div>
+
+      <!-- VAR-B : Reverse -->
+      <div class="card vb">
+        <div class="tag"><span class="num">VAR-B</span>Reverse</div>
+        <div class="meta">Dark Background · Required</div>
+        <div class="stage">
+          <div class="lockup">
+            <div class="row-chips">
+              <div class="chip c1"></div><div class="chip c2"></div>
+              <div class="chip selected"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.5L21 9.2l-5 4.4 1.6 6.7L12 16.8 6.4 20.3 8 13.6 3 9.2l6.4-.7z" fill="white" fill-opacity="0.5"/></svg></div>
+              <div class="chip c3"></div><div class="chip c4"></div>
+            </div>
+            <div class="row-text">
+              <span class="bracket">[</span>
+              <span class="letter">F</span><span class="letter">R</span><span class="letter">I</span>
+              <span class="letter acc">S</span><span class="letter">A</span><span class="letter">T</span>
+              <span class="bracket">]</span>
+            </div>
+          </div>
+        </div>
+        <div class="footer-card">
+          <div class="title">VAR-B · 리버스 (필수)</div>
+          <p class="desc">다크 배경 위 네거티브 버전. 다크 모드 웹사이트·영상 인트로·야간 광고·어두운 키비주얼에 사용.</p>
+          <span class="keyword">DARK MODE · VIDEO · NIGHT</span>
+        </div>
+      </div>
+
+      <!-- VAR-C : Compact Inline -->
+      <div class="card">
+        <div class="ambient br"></div>
+        <div class="tag"><span class="num">VAR-C</span>Compact Inline</div>
+        <div class="meta">Email · Footer · Optional</div>
+        <div class="stage">
+          <div class="vc-lockup">
+            <div class="vc-mini-chips">
+              <div class="mc c1"></div>
+              <div class="mc c2"></div>
+              <div class="mc selected"></div>
+              <div class="mc c3"></div>
+              <div class="mc c4"></div>
+            </div>
+            <div class="vc-text">
+              <span class="br">[</span>
+              <span class="lt">FRIS<span class="acc">A</span>T</span>
+              <span class="br">]</span>
+            </div>
+          </div>
+        </div>
+        <div class="footer-card">
+          <div class="title">VAR-C · 컴팩트 인라인</div>
+          <p class="desc">한 줄 가로 압축형. 이메일 시그니처·웹 푸터·문서 헤더·SNS 바이오·명함 보조 라인 등 가로 좁은 환경 전용.</p>
+          <span class="keyword">INLINE · COMPACT · 1-LINE</span>
+        </div>
+      </div>
+
+      <!-- VAR-D : Favicon -->
+      <div class="card">
+        <div class="ambient tr"></div>
+        <div class="tag"><span class="num">VAR-D</span>Favicon · Micro</div>
+        <div class="meta">16-32px · Optional</div>
+        <div class="stage">
+          <div class="vd-mini">
+            <div class="core">
+              <div class="br-row">
+                <span>[</span>
+                <span class="star">
+                  <svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.5L21 9.2l-5 4.4 1.6 6.7L12 16.8 6.4 20.3 8 13.6 3 9.2l6.4-.7z" fill="white"/></svg>
+                </span>
+                <span>]</span>
+              </div>
+              <div class="chip-row">
+                <div class="ch"></div>
+                <div class="ch"></div>
+                <div class="ch on"></div>
+                <div class="ch"></div>
+                <div class="ch"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-card">
+          <div class="title">VAR-D · 파비콘 / 마이크로</div>
+          <p class="desc">초소형 16-32px 전용. 브라우저 탭 파비콘·앱 알림·푸시 뱃지에서 핵심 시그니처(별 + 5칩)만 남긴 미니 버전.</p>
+          <span class="keyword">FAVICON · NOTIFICATION · 16PX</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 05 : COLOR PALETTE
+       ============================================ -->
+  <div class="section" id="palette">
+    <div class="sec-head">
+      <div class="sec-num">— 05</div>
+      <div class="sec-title">Color Palette <em>·</em> v1.0 System</div>
+      <p class="sec-desc">모든 락업과 베리에이션이 공유하는 컬러 시스템. <strong>포인트 #6C31D4</strong>는 섹션당 1-2곳에만, 번짐 블롭 3색은 배경에서 투명도 10-20% 이내로 사용.</p>
+    </div>
+
+    <div class="palette-ref">
+      <div class="label">FRISAT v1.0 · <strong>Color System</strong></div>
+      <div class="ref-row">
+        <div class="ref-chip">
+          <div class="ref-color" style="background:#6C31D4"></div>
+          <div class="ref-info"><span class="ref-name">Vivid Purple</span><span class="ref-hex">#6C31D4 · 포인트</span></div>
+        </div>
+        <div class="ref-chip">
+          <div class="ref-color" style="background:#1A1238"></div>
+          <div class="ref-info"><span class="ref-name">Deep Purple Dark</span><span class="ref-hex">#1A1238 · 헤드라인</span></div>
+        </div>
+        <div class="ref-chip">
+          <div class="ref-color" style="background:#8390CA"></div>
+          <div class="ref-info"><span class="ref-name">Periwinkle</span><span class="ref-hex">#8390CA · 블롭1</span></div>
+        </div>
+        <div class="ref-chip">
+          <div class="ref-color" style="background:#C0E0DB"></div>
+          <div class="ref-info"><span class="ref-name">Soft Mint</span><span class="ref-hex">#C0E0DB · 블롭2</span></div>
+        </div>
+        <div class="ref-chip">
+          <div class="ref-color" style="background:#F7A7A6"></div>
+          <div class="ref-info"><span class="ref-name">Blush Pink</span><span class="ref-hex">#F7A7A6 · 블롭3</span></div>
+        </div>
+        <div class="ref-chip">
+          <div class="ref-color" style="background:#E8DFFF"></div>
+          <div class="ref-info"><span class="ref-name">Light Purple Tint</span><span class="ref-hex">#E8DFFF · 배지</span></div>
+        </div>
+        <div class="ref-chip">
+          <div class="ref-color" style="background:#F9F8FF;border:1px solid var(--line)"></div>
+          <div class="ref-info"><span class="ref-name">Purple Tint White</span><span class="ref-hex">#F9F8FF · 베이스</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 06 : USE-CASE MAP
+       ============================================ -->
+  <div class="section" id="decision">
+    <div class="sec-head">
+      <div class="sec-num">— 06</div>
+      <div class="sec-title">Use-Case Map <em>·</em> Decision Guide</div>
+      <p class="sec-desc">상황별로 어떤 버전을 사용해야 하는지 한눈에 정리한 의사결정 가이드. 헷갈릴 때는 V1(메인)이 기본이다.</p>
+    </div>
+
+    <div class="decision">
+      <div class="dec-grid">
+        <div class="head">버전</div>
+        <div class="head">이름</div>
+        <div class="head">분류</div>
+        <div class="head">최적 사용처</div>
+
+        <div><span class="opt-num main">V1</span></div>
+        <div class="opt-name">Main Signature</div>
+        <div class="body-text">메인 (B · Bottom)</div>
+        <div class="body-text">웹 메인·발표 자료·브랜드 영상·콘텐츠 헤더 (헷갈릴 때 기본 선택)</div>
+
+        <div class="opt-num">V2</div>
+        <div class="opt-name">Light Variant</div>
+        <div class="body-text">메인 (B · Bottom)</div>
+        <div class="body-text">매거진·에디토리얼 콘텐츠·인쇄 컬렉션·무드보드</div>
+
+        <div class="opt-num">V3</div>
+        <div class="opt-name">App Icon</div>
+        <div class="body-text">메인 (B · Bottom)</div>
+        <div class="body-text">앱 아이콘·SNS 프로필·인쇄 도장·단독 인장</div>
+
+        <div class="opt-num">A1</div>
+        <div class="opt-name">Text Top Standard</div>
+        <div class="body-text">보조 (A · Top)</div>
+        <div class="body-text">웹 헤더·문서 표지·발표 자료 표지·텍스트 우선 환경</div>
+
+        <div class="opt-num">A2</div>
+        <div class="opt-name">Text Top Boxed</div>
+        <div class="body-text">보조 (A · Top)</div>
+        <div class="body-text">명함 인장·문서 도장·서류 헤더 인장</div>
+
+        <div class="opt-num">VAR-A</div>
+        <div class="opt-name">Monochrome</div>
+        <div class="body-text">베리에이션 (필수)</div>
+        <div class="body-text">흑백 출력·스탬프·각인·법적 문서·팩스</div>
+
+        <div class="opt-num">VAR-B</div>
+        <div class="opt-name">Reverse (Dark)</div>
+        <div class="body-text">베리에이션 (필수)</div>
+        <div class="body-text">다크 모드 웹·영상 인트로·야간 광고·어두운 키비주얼</div>
+
+        <div class="opt-num">VAR-C</div>
+        <div class="opt-name">Compact Inline</div>
+        <div class="body-text">베리에이션 (옵션)</div>
+        <div class="body-text">이메일 서명·웹 푸터·SNS 바이오·명함 보조 라인</div>
+
+        <div class="opt-num">VAR-D</div>
+        <div class="opt-name">Favicon Micro</div>
+        <div class="body-text">베리에이션 (옵션)</div>
+        <div class="body-text">브라우저 탭·앱 알림 아이콘·푸시 뱃지</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>FRISAT · Final Master Logo System · v1.0 · 2026</div>
+    <div><span class="point">●</span> 9 Versions · Locked-in</div>
+  </footer>
+
+</div>
+</body>
+</html>
