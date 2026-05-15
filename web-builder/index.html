@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FRISAT — B2B 웹사이트 빌더 (프로토타입)</title>
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c-primary: #6C31D4;
+      --c-primary-10: rgba(108,49,212,0.10);
+      --c-primary-20: rgba(108,49,212,0.20);
+      --c-accent: #8390CA;
+      --c-accent-10: rgba(131,144,202,0.15);
+      --c-mint: #C0E0DB;
+      --c-mint-10: rgba(192,224,219,0.25);
+      --c-blush: #F7A7A6;
+      --c-warn: #F59E0B;
+      --c-danger: #EF4444;
+      --c-bg: #F9F8FF;
+      --c-card: #FFFFFF;
+      --c-border: rgba(108,49,212,0.12);
+      --c-border-solid: #E8DFFF;
+      --c-text: #1A1238;
+      --c-muted: #8A87B8;
+      --c-muted-light: #B8B5D4;
+      --r: 14px; --r-sm: 8px;
+      --shadow: 0 2px 12px rgba(108,49,212,0.07), 0 0 0 1px rgba(108,49,212,0.06);
+      --shadow-md: 0 8px 28px rgba(108,49,212,0.12), 0 0 0 1px rgba(108,49,212,0.06);
+      --shadow-lg: 0 20px 60px rgba(108,49,212,0.20);
+    }
+
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: "Pretendard Variable", Pretendard, -apple-system, 'Apple SD Gothic Neo', sans-serif;
+      background: var(--c-bg); color: var(--c-text);
+      line-height: 1.7; font-size: 15px;
+    }
+    .app { height: 100vh; overflow: hidden; }
+
+    /* SCREENS — full-viewport */
+    .screen { display: none; width: 100%; height: 100%; }
+    #scr-start.on { display: grid; grid-template-columns: 56% 44%; height: 100vh; }
+    #scr-form.on  { display: grid; grid-template-columns: 270px 1fr; height: 100vh; }
+    #scr-done.on  { display: block; height: 100vh; overflow-y: auto; background: var(--c-bg); }
+
+    /* ── START SCREEN ── */
+    .start-l {
+      background: #1A1238; padding: 48px 52px;
+      display: flex; flex-direction: column; justify-content: center;
+      height: 100vh; overflow-y: auto; position: relative;
+    }
+    .start-l::before {
+      content:''; position:absolute; top:-80px; right:-80px;
+      width:320px; height:320px; border-radius:50%;
+      background:rgba(192,224,219,0.08); pointer-events:none;
+    }
+    .start-l::after {
+      content:''; position:absolute; bottom:-60px; left:-60px;
+      width:240px; height:240px; border-radius:50%;
+      background:rgba(247,167,166,0.07); pointer-events:none;
+    }
+    .start-logo {
+      display: flex; align-items: center; gap: 9px;
+      margin-bottom: 48px; position: relative;
+    }
+    .logo-squares { display: flex; gap: 3px; align-items: center; }
+    .logo-sq { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+    .logo-sq-main {
+      width:11px; height:11px; border-radius:2.5px; flex-shrink:0;
+      box-shadow:0 0 0 2px #1A1238, 0 0 0 3.5px #6C31D4;
+    }
+    .logo-wordmark { font-size:17px; font-weight:800; letter-spacing:-0.02em; color:white; }
+    .logo-wordmark .bkt { color:#C0E0DB; font-weight:900; }
+    .logo-wordmark .hi  { color:#C0E0DB; }
+    .start-content { position: relative; }
+    .start-l h1 {
+      font-size:clamp(28px,3vw,38px); font-weight:800; line-height:1.3;
+      color:white; margin-bottom:14px; letter-spacing:-0.02em;
+    }
+    .start-l h1 em { color:#C0E0DB; font-style:normal; }
+    .start-l .start-sub {
+      font-size:15px; color:rgba(255,255,255,0.52);
+      line-height:1.85; margin-bottom:36px;
+    }
+    .start-r {
+      background: var(--c-card);
+      border-left: 1px solid rgba(108,49,212,0.10);
+      padding: 48px 40px;
+      display: flex; flex-direction: column; justify-content: center;
+      height: 100vh; overflow-y: auto;
+    }
+    .start-r-inner { max-width: 380px; }
+    .start-r-lbl {
+      font-size:11px; font-weight:700; color:var(--c-muted-light);
+      letter-spacing:0.08em; text-transform:uppercase; margin-bottom:16px;
+    }
+    .s-mod-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:26px; }
+    .s-mod {
+      background:var(--c-bg); border:1px solid var(--c-border-solid);
+      border-radius:var(--r-sm); padding:16px 14px;
+    }
+    .s-mod-ico { font-size:20px; margin-bottom:9px; }
+    .s-mod-title { font-size:13px; font-weight:600; color:var(--c-text); margin-bottom:4px; }
+    .s-mod-sub { font-size:11px; color:var(--c-muted); line-height:1.5; }
+    .start-divider { height:1px; background:var(--c-border); margin:20px 0; }
+    .start-steps-mini { display:flex; flex-direction:column; gap:13px; }
+    .start-step-mini { display:flex; gap:11px; align-items:flex-start; }
+    .start-step-num {
+      width:24px; height:24px; border-radius:50%; flex-shrink:0;
+      background:var(--c-primary-10); border:1.5px solid var(--c-border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:700; color:var(--c-primary); margin-top:1px;
+    }
+    .start-step-txt { font-size:13px; color:var(--c-text); font-weight:500; line-height:1.4; }
+    .start-step-txt span { font-size:12px; color:var(--c-muted); font-weight:400; display:block; margin-top:2px; }
+
+    /* ── SIDEBAR ── */
+    .sb {
+      background:#1A1238; display:flex; flex-direction:column;
+      height:100vh; overflow:hidden;
+      border-right:1px solid rgba(108,49,212,0.28);
+    }
+    .sb-top {
+      padding:22px 20px 16px; border-bottom:1px solid rgba(255,255,255,0.07); flex-shrink:0;
+    }
+    .sb-logo { display:flex; align-items:center; gap:8px; margin-bottom:3px; }
+    .sb-logo .logo-sq-main { box-shadow:0 0 0 2px #1A1238, 0 0 0 3.5px #6C31D4; }
+    .sb-logo-wm { font-size:15px; font-weight:800; letter-spacing:-0.02em; color:white; }
+    .sb-logo-wm .bkt { color:#C0E0DB; } .sb-logo-wm .hi { color:#C0E0DB; }
+    .sb-subtitle { font-size:11px; color:rgba(255,255,255,0.28); letter-spacing:0.04em; }
+    .sb-secs { flex:1; overflow-y:auto; padding:10px 0; }
+    .sb-secs::-webkit-scrollbar { width:3px; }
+    .sb-secs::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:99px; }
+    .sb-sec-item {
+      display:flex; align-items:flex-start; gap:11px;
+      padding:9px 20px; transition:background .15s; cursor:default;
+    }
+    .sb-sec-item:hover { background:rgba(255,255,255,0.04); }
+    .sb-sec-dot {
+      width:24px; height:24px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:10px; font-weight:700;
+      background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.22);
+      transition:all .25s; margin-top:2px;
+    }
+    .sb-sec-item.done   .sb-sec-dot { background:rgba(192,224,219,0.22); color:#C0E0DB; }
+    .sb-sec-item.active .sb-sec-dot { background:var(--c-primary); color:white; box-shadow:0 0 0 3px rgba(108,49,212,0.25); }
+    .sb-sec-info { flex:1; min-width:0; }
+    .sb-sec-sub {
+      font-size:10px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
+      color:rgba(255,255,255,0.22); margin-bottom:2px; transition:color .2s;
+    }
+    .sb-sec-item.active .sb-sec-sub { color:var(--c-mint); }
+    .sb-sec-item.done   .sb-sec-sub { color:rgba(255,255,255,0.32); }
+    .sb-sec-name {
+      font-size:13px; font-weight:500; color:rgba(255,255,255,0.26);
+      line-height:1.35; transition:color .2s;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .sb-sec-item.active .sb-sec-name { color:white; font-weight:600; }
+    .sb-sec-item.done   .sb-sec-name { color:rgba(255,255,255,0.48); }
+    .sb-bot {
+      padding:16px 20px 20px; border-top:1px solid rgba(255,255,255,0.07); flex-shrink:0;
+    }
+    .sb-time-lbl {
+      font-size:10px; font-weight:600; letter-spacing:0.08em;
+      color:rgba(255,255,255,0.28); text-transform:uppercase; margin-bottom:6px;
+    }
+    .sb-time-row { display:flex; align-items:baseline; gap:4px; margin-bottom:3px; }
+    .sb-time-num { font-size:28px; font-weight:800; color:white; line-height:1; letter-spacing:-0.02em; }
+    .sb-time-unit { font-size:14px; font-weight:600; color:rgba(255,255,255,0.45); }
+    .sb-time-sub { font-size:11px; color:rgba(255,255,255,0.28); margin-bottom:12px; }
+    .sb-prog-track { height:3px; background:rgba(255,255,255,0.1); border-radius:99px; overflow:hidden; }
+    .sb-prog-fill {
+      height:100%; border-radius:99px;
+      background:linear-gradient(90deg, var(--c-mint), var(--c-primary));
+      transition:width .4s ease;
+    }
+
+    /* ── FORM MAIN ── */
+    .form-main { display:flex; flex-direction:column; height:100vh; overflow:hidden; background:var(--c-bg); }
+    .form-body { flex:1; overflow-y:auto; padding:32px 36px 24px; }
+    .form-body::-webkit-scrollbar { width:5px; }
+    .form-body::-webkit-scrollbar-thumb { background:var(--c-border); border-radius:99px; }
+    .form-nav {
+      flex-shrink:0; background:var(--c-card); border-top:1px solid var(--c-border);
+      padding:14px 24px; display:flex; align-items:center; justify-content:space-between;
+    }
+    .nav-right { display:flex; align-items:center; gap:12px; }
+    .nav-ctr { font-size:13px; color:var(--c-muted); }
+
+    /* ── DONE SCREEN HEADER ── */
+    .done-header {
+      position:sticky; top:0; z-index:10;
+      background:white; border-bottom:1px solid var(--c-border);
+      padding:0 28px; height:58px;
+      display:flex; align-items:center;
+    }
+    .done-header .logo-sq-main { box-shadow:0 0 0 2px white, 0 0 0 3.5px #6C31D4; }
+    .done-header .logo-wordmark { color:var(--c-text); }
+    .done-header .logo-wordmark .bkt { color:#6C31D4; }
+    .done-content { max-width:680px; margin:0 auto; padding:28px 24px 80px; }
+
+    /* s-badge / s-flow shared by start screen */
+    .s-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(108,49,212,0.30); border: 1px solid rgba(108,49,212,0.52);
+      border-radius: 99px; padding: 5px 14px; margin-bottom: 20px;
+      font-size: 12px; font-weight: 600; color: #C0E0DB; position: relative;
+    }
+    .s-dot { width:6px; height:6px; border-radius:50%; background:#C0E0DB; flex-shrink:0;
+      animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .s-flow {
+      display: grid; grid-template-columns: 1fr 26px 1fr 26px 1fr;
+      align-items: center; margin-bottom: 32px;
+    }
+    .s-step {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px; padding: 15px 10px; text-align: center;
+    }
+    .s-step-active { background: rgba(108,49,212,0.28); border-color: rgba(108,49,212,0.55); }
+    .s-step-num { font-size:10px; font-weight:600; letter-spacing:0.08em; color:#8390CA; margin-bottom:6px; }
+    .s-step-active .s-step-num { color:#C0E0DB; }
+    .s-step-icon { font-size:18px; margin-bottom:6px; }
+    .s-step-title { font-size:13px; font-weight:600; color:white; }
+    .s-step-sub { font-size:11px; color:rgba(255,255,255,0.35); margin-top:3px; }
+    .s-arrow { text-align:center; color:rgba(255,255,255,0.20); font-size:14px; }
+    .btn-start {
+      background:white; color:#6C31D4; border:none;
+      border-radius:10px; padding:16px; font-size:16px; font-weight:700;
+      font-family:inherit; cursor:pointer; width:100%; position:relative;
+      transition:box-shadow .2s, transform .2s;
+    }
+    .btn-start:hover { box-shadow:0 8px 24px rgba(255,255,255,0.2); transform:translateY(-1px); }
+    .s-note { text-align:center; font-size:12px; color:rgba(255,255,255,0.28); margin-top:12px; position:relative; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 6px; padding: 11px 22px; border-radius: var(--r-sm);
+      font-size: 15px; font-weight: 600; font-family: inherit;
+      cursor: pointer; border: none; transition: all .2s;
+    }
+    .btn-primary { background: var(--c-primary); color: white; }
+    .btn-primary:hover { background: #5A28B5; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-full { width: 100%; padding: 15px; font-size: 16px; }
+    .btn-ghost { background: transparent; color: var(--c-muted); padding: 11px 14px; }
+    .btn-ghost:hover { background: var(--c-bg); color: var(--c-text); }
+    .btn-secondary { background: var(--c-bg); color: var(--c-text); border: 1px solid var(--c-border); }
+    .btn-secondary:hover { background: var(--c-border); }
+
+    /* SECTION CARD */
+    .sec-card { background: var(--c-card); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; animation: fadeIn .3s ease; max-width: 640px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+    .sec-intro {
+      padding: 26px 30px; border-bottom: 1px solid var(--c-border);
+      background: linear-gradient(to right, var(--c-primary-10), transparent);
+    }
+    .sec-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--c-primary-10); color: var(--c-primary);
+      font-size: 12px; font-weight: 600; padding: 4px 10px;
+      border-radius: 99px; margin-bottom: 10px;
+    }
+    .sec-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+    .sec-intro-txt { font-size: 14px; color: var(--c-muted); line-height: 1.85; white-space: pre-line; }
+    .questions { padding: 22px 30px; }
+    .q-item { margin-bottom: 26px; }
+    .q-item:last-child { margin-bottom: 0; }
+    .q-lbl { display: block; font-size: 15px; font-weight: 600; margin-bottom: 5px; }
+    .q-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 8px; }
+    .q-req { color: var(--c-primary); margin-left: 2px; }
+
+    /* INPUTS */
+    .inp {
+      width: 100%; padding: 11px 13px;
+      border: 1.5px solid var(--c-border); border-radius: var(--r-sm);
+      font-size: 15px; font-family: inherit; color: var(--c-text);
+      background: white; transition: border-color .2s, box-shadow .2s; outline: none;
+    }
+    .inp:focus { border-color: var(--c-primary); box-shadow: 0 0 0 3px var(--c-primary-10); }
+    .inp.err { border-color: var(--c-danger); box-shadow: 0 0 0 3px rgba(239,68,68,.10); }
+    textarea.inp { min-height: 96px; resize: vertical; }
+    .char-cnt { text-align: right; font-size: 12px; color: var(--c-muted-light); margin-top: 4px; }
+    .char-cnt.near { color: var(--c-warn); }
+    .char-cnt.over { color: var(--c-danger); }
+
+    /* COLOR */
+    .color-row { display: flex; align-items: center; gap: 10px; }
+    .color-preview {
+      width: 42px; height: 42px; border-radius: var(--r-sm);
+      border: 2px solid var(--c-border); cursor: pointer; flex-shrink: 0; transition: border-color .2s;
+    }
+    .color-preview:hover { border-color: var(--c-primary); }
+    input[type="color"] { width: 0; height: 0; padding: 0; border: none; opacity: 0; position: absolute; }
+    .hex-inp { flex: 1; max-width: 130px; }
+    .color-hint { font-size: 12px; color: var(--c-muted-light); }
+
+    /* TAGS */
+    .tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .tag-chip {
+      padding: 6px 14px; border-radius: 99px;
+      border: 1.5px solid var(--c-border);
+      font-size: 13px; cursor: pointer; transition: all .15s;
+      font-family: inherit; background: white; color: var(--c-muted);
+    }
+    .tag-chip.sel { background: var(--c-primary-10); border-color: var(--c-primary); color: var(--c-primary); font-weight: 600; }
+    .tag-chip:hover:not(.sel) { border-color: var(--c-primary); color: var(--c-primary); }
+
+    /* INSIGHT */
+    .ins-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 9px; background: none; border: none;
+      color: var(--c-muted); font-size: 13px; font-family: inherit;
+      cursor: pointer; padding: 3px 0; transition: color .2s;
+    }
+    .ins-btn:hover { color: var(--c-primary); }
+    .ins-btn .arr { transition: transform .25s; }
+    .ins-btn.open .arr { transform: rotate(180deg); }
+    .ins-body {
+      margin-top: 9px; padding: 13px 15px;
+      background: var(--c-primary-10); border-left: 3px solid var(--c-primary);
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      font-size: 13px; color: #4A1F9A; line-height: 1.85; display: none;
+    }
+    .ins-body.open { display: block; animation: fadeD .2s ease; }
+    @keyframes fadeD { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    .ins-ttl { font-weight: 700; margin-bottom: 5px; }
+
+    /* NAV — now inline inside form-main (see .form-nav above) */
+
+    /* TOAST */
+    .toast {
+      position: fixed; top: 72px; left: 50%;
+      transform: translateX(-50%) translateY(-16px);
+      background: #0F172A; color: white;
+      padding: 11px 18px; border-radius: var(--r-sm);
+      font-size: 14px; font-weight: 500; opacity: 0;
+      transition: all .3s; pointer-events: none; z-index: 200;
+      white-space: nowrap; max-width: 90vw;
+    }
+    .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* MODAL */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.52);
+      backdrop-filter: blur(3px); z-index: 300;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .overlay.on { opacity: 1; pointer-events: all; }
+    .modal {
+      background: white; border-radius: var(--r); box-shadow: var(--shadow-lg);
+      max-width: 460px; width: 100%; overflow: hidden;
+      transform: scale(.95); transition: transform .25s;
+    }
+    .overlay.on .modal { transform: scale(1); }
+    .modal-hd { padding: 22px 26px 18px; border-bottom: 1px solid var(--c-border); }
+    .modal-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #FEF3C7; color: #92400E;
+      font-size: 12px; font-weight: 600; padding: 4px 10px;
+      border-radius: 99px; margin-bottom: 10px;
+    }
+    .modal-ttl { font-size: 18px; font-weight: 700; line-height: 1.45; white-space: pre-line; }
+    .modal-bd { padding: 18px 26px; font-size: 14px; color: var(--c-muted); line-height: 1.85; }
+    .modal-acts { padding: 14px 26px 22px; display: flex; flex-direction: column; gap: 8px; }
+    .m-btn {
+      padding: 13px; border: none; border-radius: var(--r-sm);
+      font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background .2s;
+    }
+    .m-btn.pri { background: var(--c-primary); color: white; }
+    .m-btn.pri:hover { background: #5A28B5; }
+    .m-btn.sec { background: var(--c-bg); color: var(--c-text); }
+    .m-btn.sec:hover { background: var(--c-border-solid); }
+    .m-btn.acc { background: var(--c-mint-10); color: #2D7A71; border: 1px solid var(--c-mint); }
+    .m-btn.acc:hover { background: rgba(192,224,219,.35); }
+
+    /* COMPLETE */
+    .done-hero {
+      background: linear-gradient(135deg, #1A1238 0%, #6C31D4 100%);
+      border-radius: var(--r); padding: 40px 32px;
+      color: white; text-align: center; margin-bottom: 22px;
+      position: relative; overflow: hidden;
+    }
+    .done-hero::before {
+      content: ''; position: absolute; top: -50px; right: -50px;
+      width: 180px; height: 180px; border-radius: 50%;
+      background: rgba(192,224,219,0.18); pointer-events: none;
+    }
+    .done-emo { font-size: 48px; margin-bottom: 14px; }
+    .done-hero h2 { font-size: 25px; font-weight: 700; margin-bottom: 10px; }
+    .done-hero p { font-size: 14px; color: rgba(255,255,255,.78); line-height: 1.8; }
+    .gap-sec { background: var(--c-card); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 22px; }
+    .gap-hd { padding: 22px 26px; border-bottom: 1px solid var(--c-border); }
+    .gap-hd h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .gap-hd p { font-size: 14px; color: var(--c-muted); line-height: 1.7; }
+    .gap-list { padding: 18px 26px; display: flex; flex-direction: column; gap: 14px; }
+    .gap-card { border: 1px solid var(--c-border); border-radius: var(--r-sm); overflow: hidden; }
+    .gap-card-lbl { padding: 9px 15px; background: var(--c-bg); font-size: 12px; font-weight: 600; color: var(--c-muted); border-bottom: 1px solid var(--c-border); }
+    .gap-cmp { display: grid; grid-template-columns: 1fr auto 1fr; }
+    .gap-b { padding: 13px 15px; background: rgba(247,167,166,0.12); border-right: 1px solid var(--c-border-solid); }
+    .gap-a { padding: 13px 15px; background: var(--c-primary-10); border-left: 1px solid var(--c-border-solid); }
+    .gap-mini-lbl { font-size: 11px; font-weight: 700; color: var(--c-muted-light); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+    .gap-txt-b { font-size: 13px; color: #8B3A3A; line-height: 1.6; }
+    .gap-txt-a { font-size: 13px; color: #4A1F9A; font-weight: 600; line-height: 1.6; }
+    .gap-arr { display: flex; align-items: center; justify-content: center; padding: 0 8px; color: var(--c-muted-light); font-size: 16px; }
+    .gap-ins { padding: 8px 15px; background: var(--c-bg); border-top: 1px solid var(--c-border); font-size: 12px; color: var(--c-muted); }
+    .cta-box {
+      background: linear-gradient(135deg, #1A1238 0%, #6C31D4 100%);
+      border-radius: var(--r); padding: 34px 30px;
+      color: white; text-align: center; margin-bottom: 40px;
+      position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: ''; position: absolute; top: -50px; right: -50px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: rgba(192,224,219,0.15); pointer-events: none;
+    }
+    .cta-box h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .cta-box > p { font-size: 14px; color: rgba(255,255,255,.78); line-height: 1.8; margin-bottom: 22px; }
+    .cta-feats { display: flex; flex-direction: column; gap: 8px; margin-bottom: 26px; text-align: left; }
+    .cta-feat { display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(255,255,255,.9); }
+    .cta-ico {
+      width: 20px; height: 20px; background: rgba(255,255,255,.15);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0;
+    }
+    .cta-main-btn {
+      width: 100%; padding: 16px; background: white; color: var(--c-primary);
+      font-size: 16px; font-weight: 700; font-family: inherit;
+      border: none; border-radius: var(--r-sm); cursor: pointer;
+      transition: transform .2s, box-shadow .2s; position: relative;
+    }
+    .cta-main-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.2); }
+    .cta-sub { margin-top: 12px; font-size: 12px; color: rgba(255,255,255,.5); }
+
+    /* GAP DIAGNOSIS */
+    .diag-sec { background: var(--c-card); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 14px; }
+    .diag-sec-hd { padding: 20px 22px 16px; border-bottom: 1px solid var(--c-border-solid); }
+    .diag-sec-badge {
+      display: inline-block; background: #E8DFFF; color: #6C31D4;
+      font-size: 11px; font-weight: 700; padding: 3px 10px;
+      border-radius: 99px; margin-bottom: 9px;
+    }
+    .diag-sec-hd h3 { font-size: 17px; font-weight: 700; margin-bottom: 5px; }
+    .diag-sec-hd p { font-size: 13px; color: var(--c-muted); line-height: 1.6; }
+    .gap-items { padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+    .gap-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 13px 14px; border-radius: var(--r-sm);
+      background: var(--c-bg); border: 1px solid var(--c-border-solid);
+    }
+    .gap-item-icon { font-size: 17px; flex-shrink: 0; padding-top: 1px; }
+    .gap-item-body { flex: 1; }
+    .gap-item-title {
+      font-size: 14px; font-weight: 600; color: var(--c-text);
+      margin-bottom: 4px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+    }
+    .gap-item-desc { font-size: 12px; color: var(--c-muted); line-height: 1.7; }
+    .gap-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px; }
+    .gap-badge-high { background: rgba(247,167,166,0.3); color: #8B3A3A; }
+    .gap-badge-med  { background: #E8DFFF; color: #6C31D4; }
+
+    /* JOURNEY */
+    .journey-sec { background: var(--c-card); border-radius: var(--r); box-shadow: var(--shadow); padding: 20px 22px; margin-bottom: 14px; }
+    .journey-lbl { font-size: 11px; font-weight: 700; color: var(--c-muted-light); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 18px; }
+    .j-steps { display: flex; flex-direction: column; }
+    .j-step { display: flex; gap: 13px; align-items: flex-start; padding: 9px 0; position: relative; }
+    .j-step:not(:last-child)::after {
+      content: ''; position: absolute; left: 13px; top: 36px;
+      width: 1px; height: calc(100% - 10px); background: var(--c-border-solid);
+    }
+    .j-dot {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; z-index: 1;
+      background: var(--c-bg); border: 1.5px solid var(--c-border-solid); color: var(--c-muted);
+    }
+    .j-dot-done { background: var(--c-primary); border-color: var(--c-primary); color: white; }
+    .j-dot-next { background: var(--c-primary-10); border-color: var(--c-primary); color: var(--c-primary); }
+    .j-title { font-size: 14px; font-weight: 600; color: var(--c-text); margin-bottom: 2px; line-height: 1.3; }
+    .j-sub { font-size: 12px; color: var(--c-muted); }
+    .j-step-done .j-title { color: var(--c-primary); }
+    .j-badge-opt {
+      font-size: 10px; font-weight: 600; color: var(--c-muted); background: var(--c-bg);
+      border: 1px solid var(--c-border-solid); padding: 1px 6px; border-radius: 99px; margin-left: 6px;
+    }
+
+    /* MEETING CTA */
+    .meeting-cta {
+      background: linear-gradient(135deg, #1A1238 0%, #6C31D4 100%);
+      border-radius: var(--r); padding: 32px 26px 28px;
+      color: white; text-align: center; margin-bottom: 40px;
+      position: relative; overflow: hidden;
+    }
+    .meeting-cta::before {
+      content: ''; position: absolute; top: -50px; right: -50px;
+      width: 180px; height: 180px; border-radius: 50%;
+      background: rgba(192,224,219,0.12); pointer-events: none;
+    }
+    .meeting-badge {
+      display: inline-block; background: rgba(192,224,219,0.18);
+      border: 1px solid rgba(192,224,219,0.28); color: #C0E0DB;
+      font-size: 12px; font-weight: 600; padding: 4px 14px;
+      border-radius: 99px; margin-bottom: 14px; position: relative;
+    }
+    .meeting-cta h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; position: relative; }
+    .meeting-cta > p { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.8; margin-bottom: 22px; position: relative; }
+    .btn-meeting {
+      width: 100%; padding: 16px; background: white; color: #6C31D4;
+      font-size: 16px; font-weight: 700; font-family: inherit;
+      border: none; border-radius: var(--r-sm); cursor: pointer;
+      transition: transform .2s; position: relative; margin-bottom: 10px;
+    }
+    .btn-meeting:hover { transform: translateY(-2px); }
+    .btn-preview-only {
+      background: none; border: none; cursor: pointer; font-family: inherit;
+      font-size: 13px; color: rgba(255,255,255,0.38); padding: 6px;
+      position: relative; transition: color .2s; display: block; width: 100%;
+    }
+    .btn-preview-only:hover { color: rgba(255,255,255,0.65); }
+
+    /* FORMAT HINT */
+    .q-fmt-hint { font-size: 12px; color: var(--c-muted-light); margin-top: 5px; }
+
+    /* SKIP BTN */
+    .btn-skip {
+      background: transparent; border: none; cursor: pointer;
+      font-size: 13px; color: var(--c-muted-light); font-family: inherit;
+      padding: 8px 10px; transition: color .2s;
+    }
+    .btn-skip:hover { color: var(--c-muted); }
+
+    /* SITE PREVIEW */
+    .site-preview-card {
+      background: var(--c-card); border-radius: var(--r); box-shadow: var(--shadow-md);
+      overflow: hidden; margin-bottom: 22px; border: 1px solid var(--c-border);
+    }
+    .site-preview-bar {
+      background: var(--c-bg); padding: 10px 16px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--c-border);
+    }
+    .site-preview-dots { display: flex; gap: 5px; }
+    .site-preview-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--c-border); }
+    .site-preview-dots span:nth-child(1) { background: #EF4444; }
+    .site-preview-dots span:nth-child(2) { background: #F59E0B; }
+    .site-preview-dots span:nth-child(3) { background: #22C55E; }
+    .site-preview-url {
+      font-size: 12px; color: var(--c-muted); background: white;
+      padding: 4px 12px; border-radius: 99px; border: 1px solid var(--c-border);
+      flex: 1; text-align: center; max-width: 220px;
+    }
+    .site-preview-body { padding: 20px; }
+    .site-preview-hero {
+      background: linear-gradient(135deg, #1A1238 0%, #6C31D4 100%);
+      border-radius: var(--r-sm); padding: 20px 18px; margin-bottom: 12px; color: white;
+    }
+    .site-preview-tagline { font-size: 16px; font-weight: 700; margin-bottom: 5px; line-height: 1.4; }
+    .site-preview-sub { font-size: 12px; color: rgba(255,255,255,.55); margin-bottom: 13px; }
+    .site-preview-cta-btn {
+      display: inline-block; background: white; color: #6C31D4;
+      font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: var(--r-sm);
+    }
+    .site-preview-pain {
+      font-size: 13px; color: var(--c-muted); padding: 9px 13px;
+      background: var(--c-bg); border-radius: var(--r-sm); margin-bottom: 8px;
+      border: 1px solid var(--c-border-solid);
+    }
+    .site-preview-diff {
+      font-size: 13px; color: #4A1F9A; padding: 9px 13px;
+      background: var(--c-primary-10); border-radius: var(--r-sm);
+      border: 1px solid var(--c-border);
+    }
+    .site-preview-footer {
+      padding: 13px 20px; border-top: 1px solid var(--c-border);
+      background: var(--c-bg); display: flex; justify-content: flex-end;
+    }
+    .site-deploy-btn {
+      background: var(--c-primary); color: white;
+      padding: 10px 20px; border: none; border-radius: var(--r-sm);
+      font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background .2s;
+    }
+    .site-deploy-btn:hover { background: #5A28B5; }
+
+    /* NEXT STEPS */
+    .next-sec {
+      background: var(--c-card); border-radius: var(--r); box-shadow: var(--shadow);
+      overflow: hidden; margin-bottom: 40px;
+    }
+    .next-hd { padding: 22px 26px 16px; border-bottom: 1px solid var(--c-border); }
+    .next-hd h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .next-hd p { font-size: 14px; color: var(--c-muted); line-height: 1.7; }
+    .diag-grid { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+    .diag-card {
+      border: 1.5px solid var(--c-border); border-radius: var(--r-sm);
+      padding: 16px 18px; cursor: pointer; transition: all .2s;
+      display: grid; grid-template-columns: 32px 1fr; gap: 2px 10px;
+    }
+    .diag-card:hover { border-color: var(--c-primary); box-shadow: var(--shadow); transform: translateY(-1px); }
+    .diag-card-main { border-color: var(--c-primary); background: var(--c-primary-10); }
+    .diag-card-main:hover { background: rgba(108,49,212,.13); }
+    .diag-icon { font-size: 20px; grid-row: span 3; padding-top: 1px; }
+    .diag-title { font-size: 15px; font-weight: 700; color: var(--c-text); line-height: 1.3; }
+    .diag-desc { font-size: 13px; color: var(--c-muted); line-height: 1.65; margin-top: 4px; }
+    .diag-action { font-size: 13px; font-weight: 600; color: var(--c-primary); margin-top: 8px; }
+
+    @media (max-width: 900px) {
+      #scr-form.on { grid-template-columns: 220px 1fr; }
+    }
+    @media (max-width: 700px) {
+      #scr-start.on { grid-template-columns: 1fr; height: auto; min-height: 100vh; overflow-y: auto; }
+      .start-l { height: auto; padding: 40px 28px; justify-content: flex-start; }
+      .start-r { height: auto; padding: 32px 28px; }
+      #scr-form.on { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+      .sb { height: auto; flex-direction: row; align-items: center; padding: 12px 16px;
+            border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+      .sb-top { padding: 0; border: none; flex: 1; }
+      .sb-secs { display: none; }
+      .sb-bot { padding: 0; border: none; display: flex; align-items: center; gap: 10px; }
+      .sb-time-sub, .sb-prog-track { display: none; }
+      .sb-time-num { font-size: 20px; }
+      .sb-time-lbl { display: none; }
+      .form-body { padding: 20px 16px; }
+    }
+    @media (max-width: 480px) {
+      .start-l h1 { font-size: 24px; }
+      .s-flow { grid-template-columns: 1fr 18px 1fr 18px 1fr; }
+      .s-step { padding: 10px 7px; }
+      .s-step-title { font-size: 11px; }
+      .sec-intro, .questions { padding: 18px 16px; }
+      .meeting-cta { padding: 26px 20px 22px; }
+      .diag-sec-hd, .gap-items, .journey-sec { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ① START SCREEN: 2-col full viewport -->
+  <div class="screen on" id="scr-start">
+
+    <!-- LEFT: dark hero -->
+    <div class="start-l">
+      <div class="start-logo">
+        <div class="logo-squares">
+          <div class="logo-sq" style="background:#C0E0DB"></div>
+          <div class="logo-sq" style="background:#F7A7A6"></div>
+          <div class="logo-sq-main" style="background:#6C31D4"></div>
+          <div class="logo-sq" style="background:#8390CA"></div>
+          <div class="logo-sq" style="background:#C8B8F0"></div>
+        </div>
+        <div class="logo-wordmark">
+          <span class="bkt">[</span>FRI<span class="hi">S</span>AT<span class="bkt">]</span>
+        </div>
+      </div>
+      <div class="start-content">
+        <div class="s-badge"><span class="s-dot"></span>B2B 전용 · AI 랜딩페이지 빌더</div>
+        <h1>지금 당신의 웹사이트,<br>고객에게 <em>무슨 말</em>을 하고 있나요?</h1>
+        <p class="start-sub">30분 안에 포지셔닝 · 페인포인트 · 차별화를 담은<br>B2B 랜딩페이지를 자동으로 설계해드립니다.</p>
+        <div class="s-flow">
+          <div class="s-step">
+            <div class="s-step-num">01</div>
+            <div class="s-step-icon">📋</div>
+            <div class="s-step-title">질문 입력</div>
+            <div class="s-step-sub">6개 섹션</div>
+          </div>
+          <div class="s-arrow">→</div>
+          <div class="s-step s-step-active">
+            <div class="s-step-num">02</div>
+            <div class="s-step-icon">⚡</div>
+            <div class="s-step-title">AI 분석</div>
+            <div class="s-step-sub">갭 진단</div>
+          </div>
+          <div class="s-arrow">→</div>
+          <div class="s-step">
+            <div class="s-step-num">03</div>
+            <div class="s-step-icon">🚀</div>
+            <div class="s-step-title">웹사이트 완성</div>
+            <div class="s-step-sub">즉시 배포 가능</div>
+          </div>
+        </div>
+        <button class="btn-start" onclick="startForm()">내 웹사이트 만들기 시작 →</button>
+        <p class="s-note">무료 · 카드 등록 없음 · 지금 바로 시작</p>
+      </div>
+    </div>
+
+    <!-- RIGHT: proof / modules -->
+    <div class="start-r">
+      <div class="start-r-inner">
+        <p class="start-r-lbl">30분 안에 만들어지는 것들</p>
+        <div class="s-mod-grid">
+          <div class="s-mod"><div class="s-mod-ico">🎯</div><div class="s-mod-title">포지셔닝</div><div class="s-mod-sub">타겟 · 카피 · 차별화</div></div>
+          <div class="s-mod"><div class="s-mod-ico">💬</div><div class="s-mod-title">페인포인트 카피</div><div class="s-mod-sub">고객 언어로 공감</div></div>
+          <div class="s-mod"><div class="s-mod-ico">🏆</div><div class="s-mod-title">차별화 증명</div><div class="s-mod-sub">숫자 · 구체적 강점</div></div>
+          <div class="s-mod"><div class="s-mod-ico">🚀</div><div class="s-mod-title">바로 배포 가능</div><div class="s-mod-sub">Vercel · 도메인 연결</div></div>
+        </div>
+        <div class="start-divider"></div>
+        <p class="start-r-lbl">이렇게 진행됩니다</p>
+        <div class="start-steps-mini">
+          <div class="start-step-mini">
+            <div class="start-step-num">1</div>
+            <div class="start-step-txt">폼 작성 (약 30분)<span>6개 섹션 · 내 회사 정보 입력</span></div>
+          </div>
+          <div class="start-step-mini">
+            <div class="start-step-num">2</div>
+            <div class="start-step-txt">30분 진단 미팅<span>전문가와 빈 공간 채우기</span></div>
+          </div>
+          <div class="start-step-mini">
+            <div class="start-step-num">3</div>
+            <div class="start-step-txt">완성 웹사이트 공유<span>미리보기 링크 + 배포 선택</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- #scr-start -->
+
+  <!-- ② FORM SCREEN: sidebar + form panel -->
+  <div class="screen" id="scr-form">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sb">
+      <div class="sb-top">
+        <div class="sb-logo">
+          <div class="logo-squares">
+            <div class="logo-sq" style="background:#C0E0DB"></div>
+            <div class="logo-sq" style="background:#F7A7A6"></div>
+            <div class="logo-sq-main" style="background:#6C31D4"></div>
+            <div class="logo-sq" style="background:#8390CA"></div>
+            <div class="logo-sq" style="background:#C8B8F0"></div>
+          </div>
+          <div class="sb-logo-wm">
+            <span class="bkt">[</span>FRI<span class="hi">S</span>AT<span class="bkt">]</span>
+          </div>
+        </div>
+        <div class="sb-subtitle">B2B 웹사이트 빌더</div>
+      </div>
+      <div class="sb-secs" id="sb-secs"></div>
+      <div class="sb-bot">
+        <div class="sb-time-lbl">웹사이트 초안까지</div>
+        <div class="sb-time-row">
+          <div class="sb-time-num" id="sb-time-num">30</div>
+          <div class="sb-time-unit">분</div>
+        </div>
+        <div class="sb-time-sub">남았어요</div>
+        <div class="sb-prog-track">
+          <div class="sb-prog-fill" id="sb-prog-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: form content + nav -->
+    <div class="form-main">
+      <div class="form-body" id="form-body">
+        <div id="sec-container"></div>
+      </div>
+      <div class="form-nav">
+        <button class="btn btn-ghost" id="btn-prev" onclick="prevSec()">← 이전</button>
+        <div class="nav-right">
+          <button class="btn-skip" id="btn-skip" onclick="skipSec()" style="display:none">건너뛰기 →</button>
+          <span class="nav-ctr" id="nav-ctr"></span>
+          <button class="btn btn-primary" id="btn-next" onclick="nextSec()">다음 →</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- #scr-form -->
+
+  <!-- ③ DONE SCREEN -->
+  <div class="screen" id="scr-done"></div>
+
+</div><!-- .app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-tag">⚡ 잠깐, 중요한 순간입니다</div>
+      <div class="modal-ttl" id="m-ttl"></div>
+    </div>
+    <div class="modal-bd" id="m-bd"></div>
+    <div class="modal-acts" id="m-acts"></div>
+  </div>
+</div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  DATA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const SECS = [
+  {
+    id:1, emoji:"🏢",
+    title:"당신은 누구인가요?",
+    sub:"기업 첫인상 설계",
+    intro:"웹사이트를 처음 본 방문자는 3초 안에 결정합니다.\n'이 회사, 나한테 맞는 곳인가?'\n\n그 판단을 만드는 재료가 바로 여기서 시작됩니다.\n아직 답이 명확하지 않아도 괜찮습니다. 일단 써보세요.",
+    doneMsg:"✓ 첫인상 설계 완료 — 이미 대부분의 웹사이트보다 명확합니다",
+    friction:null,
+    qs:[
+      { id:"co_ko", lbl:"회사명 (한국어)", sub:"고객이 당신 회사를 남에게 소개할 때 뭐라고 하나요?",
+        type:"text", ph:'예) A 컨설팅', req:true,
+        ins:{ t:"회사명이 중요한 이유", b:"회사명 뒤에 자연스럽게 붙는 설명이 당신의 실제 포지셔닝입니다.\n고객이 '거기요? [서비스] 잘 해주는 데예요'라고 말하는 그 문장이 웹사이트 카피의 출발점입니다." }
+      },
+      { id:"years", lbl:"업력", sub:"이 일을 시작한 지 얼마나 됐나요?",
+        type:"text", ph:"예) 9년 / 창업 3년차", req:false,
+        ins:{ t:"업력이 중요한 이유", b:"업력은 단순한 경력이 아닙니다. 중소기업 5년 생존율이 40%인 현실에서, 오래된 것 자체가 '검증된 곳'이라는 신호입니다." }
+      },
+      { id:"area", lbl:"서비스 지역", sub:"주로 어떤 지역의 고객과 일하고 계신가요?",
+        type:"text", ph:"예) [지역명] 중심 / 전국 원격 / [광역시·도]", req:false,
+        ins:{ t:"지역 명시가 중요한 이유", b:"지역명을 명시하면 그 지역 기업이 더 신뢰합니다. 서비스 지역은 타겟 필터링의 첫 번째 장치입니다." }
+      },
+      { id:"tagline", lbl:"한줄 캐치프레이즈 ⭐", sub:"딱 한 줄로 — 당신 회사는 고객에게 어떤 존재인가요?",
+        type:"text", ph:'예) "[고객 니즈], 끝까지 함께합니다"', req:true, limit:25,
+        ins:{ t:"캐치프레이즈가 중요한 이유", b:"이 문장이 웹사이트에서 가장 크게, 가장 먼저 보입니다.\n'무엇을 파는지'가 아니라 '고객에게 무엇이 되어주는지'를 담아야 합니다.\n\n어렵게 느껴진다면 — 고객이 당신에게 가장 많이 하는 말을 떠올려보세요." }
+      }
+    ]
+  },
+  {
+    id:2, emoji:"🎯",
+    title:"누구를 돕고 있나요?",
+    sub:"이상적인 고객 설계",
+    intro:"이 섹션이 전체 폼에서 가장 어렵습니다.\n그리고 가장 중요합니다.\n\n여기서 막힌다면, 지금 마케팅이 잘 안 되는 이유를\n스스로 발견하게 되실 겁니다.",
+    doneMsg:"✓ 타겟 설정 완료 — 이 단계가 가장 어려운 단계입니다. 잘 하셨습니다",
+    friction:"vague_target",
+    qs:[
+      { id:"persona", lbl:"이상적인 고객", sub:"가장 최근에 거래한 고객을 떠올려보세요. 어떤 분이었나요?",
+        type:"textarea", ph:"예) [지역] 소재 [업종] 법인, 직원 [N]명, [서비스]를 처음 알아보는 상황이었음", req:true,
+        ins:{ t:"타겟 설정이 중요한 이유", b:"한 명을 선명하게 그릴수록 그 사람과 비슷한 100명에게 말을 걸 수 있습니다.\n'중소기업 사장님'은 타겟이 아닙니다. 대한민국 인구의 절반입니다." }
+      },
+      { id:"persona2", lbl:"고객 공통점", sub:"이 고객과 잘 맞는 이유가 있다면 — 어떤 공통점이 있나요?",
+        type:"textarea", ph:"예) [특정 업종], 직원 [N~M]명, [특정 상황]에 처한 분들", req:false,
+        ins:{ t:"고객 공통점이 중요한 이유", b:"여기서 쓴 내용이 웹사이트의 '이런 분들께 특히 추천합니다' 섹션이 됩니다.\n타겟이 '나 얘기하는 거잖아'라고 느끼는 순간 전환율이 3배 높아집니다." }
+      }
+    ]
+  },
+  {
+    id:3, emoji:"💢",
+    title:"고객은 왜 당신을 찾나요?",
+    sub:"고객 페인포인트",
+    intro:"'우리 서비스가 좋아서 찾아옵니다.'\n\n이렇게 대답하는 분이 많습니다.\n하지만 고객은 '좋은 서비스'를 찾는 게 아닙니다.\n자신의 문제를 해결해줄 사람을 찾습니다.\n\n그 문제가 무엇인지 알고 계신가요?",
+    doneMsg:"✓ 고객 공감 언어 확보 — 이제 고객 입장에서 쓰는 법을 알게 되셨습니다",
+    friction:"unknown_pain",
+    qs:[
+      { id:"pain1", lbl:"고객 어려움 #1", sub:"고객이 가장 자주 호소하는 어려움은?",
+        type:"text", ph:"예) 어디서 시작해야 할지 모름", req:true,
+        ins:{ t:"페인포인트 카피가 중요한 이유", b:"이 문장들이 웹사이트의 '혹시 이런 경험 있으신가요?' 섹션이 됩니다.\n고객이 '맞아, 나 얘기잖아'라고 느끼는 순간 신뢰가 생깁니다.\n팁: 실제 고객이 상담 시 가장 많이 쓴 말이 최고의 카피입니다." }
+      },
+      { id:"pain1d", lbl:"어려움 #1 상세", sub:"좀 더 구체적으로 설명해주세요 (선택)",
+        type:"text", ph:"예) 관련 정보는 넘치는데 우리 회사에 맞는 게 뭔지 판단이 안 돼요", req:false
+      },
+      { id:"pain2", lbl:"고객 어려움 #2", sub:"두 번째 자주 나오는 어려움은?",
+        type:"text", ph:"예) 서류가 너무 복잡하고 잘못 쓰면 탈락할까봐 무섭다", req:false
+      },
+      { id:"pain3", lbl:"고객 어려움 #3 (선택)", sub:"세 번째 어려움이 있다면?",
+        type:"text", ph:"예) 어떤 업체를 믿어야 할지 모르겠다", req:false
+      }
+    ]
+  },
+  {
+    id:4, emoji:"🏆",
+    title:"왜 당신이어야 하나요?",
+    sub:"차별화 증명",
+    intro:"고객은 항상 비교합니다.\n검색 결과 첫 페이지에서 3~4곳을 동시에 살펴봅니다.\n\n그 중에서 당신이 선택받으려면,\n'다른 데 말고 왜 여기?'에 대한 답이 있어야 합니다.",
+    doneMsg:"✓ 차별화 증명 완료 — '왜 당신인가'에 대한 답이 생겼습니다",
+    friction:"vague_diff",
+    qs:[
+      { id:"diff1", lbl:"차별화 포인트 #1", sub:"경쟁사와 비교했을 때, 당신만의 가장 큰 강점은?",
+        type:"text", ph:"예) 현장 밀착형 동행 서비스 — 직접 방문해 처음부터 마지막까지 진행", req:true,
+        ins:{ t:"차별화 표현이 중요한 이유", b:"'경험 많음', '합리적 가격', '친절한 서비스'는 모든 경쟁사가 이미 주장하는 것들입니다.\n\n진짜 차별화:\n① 특정 방법론 ('저희는 3단계 사전진단을 먼저 합니다')\n② 특정 고객군 결과 ('[업종]만 NNN건 이상 진행')\n③ 남들이 안 하는 과정" }
+      },
+      { id:"diff2", lbl:"차별화 포인트 #2", sub:"두 번째 강점은?",
+        type:"text", ph:"예) N년 NNN건 이상 실적 — [지역] 내 최다 [서비스] 성공 레퍼런스", req:false
+      },
+      { id:"diff3", lbl:"차별화 포인트 #3 (선택)", sub:"세 번째 강점이 있다면?",
+        type:"text", ph:"예) 사후 관리 포함 — 완료 후 [N]개월 무상 A/S", req:false
+      },
+      { id:"stat1", lbl:"핵심 성과 수치", sub:"숫자로 증명할 수 있는 가장 임팩트 있는 성과 1개",
+        type:"text", ph:"예) NNN+ 누적 프로젝트 / NN% 고객 재의뢰율 / N년 업력", req:false,
+        ins:{ t:"수치 증명이 중요한 이유", b:"숫자는 가장 빠른 신뢰 신호입니다. 텍스트 10줄보다 'NNN건+'이 1초 만에 전달됩니다.\n없다면 지금부터 집계를 시작하세요. 3개월이면 쓸 수 있는 숫자가 생깁니다." }
+      }
+    ]
+  },
+  {
+    id:5, emoji:"🎨",
+    title:"어떤 느낌을 주고 싶나요?",
+    sub:"브랜드 감각 설계",
+    intro:"색깔 하나, 단어 하나가 신뢰를 만들기도 하고\n기회를 날리기도 합니다.\n\n예쁘기 위해서가 아니라,\n'믿을 만한 곳'으로 보이기 위해 선택하는 겁니다.",
+    doneMsg:"✓ 브랜드 감각 설정 완료 — 첫인상의 색깔과 톤이 결정됐습니다",
+    friction:null,
+    qs:[
+      { id:"color1", lbl:"메인 브랜드 컬러", sub:"당신 회사를 색으로 표현한다면?",
+        type:"color", def:"#1E3A8A",
+        ins:{ t:"브랜드 컬러가 중요한 이유", b:"컬러는 감정입니다.\n• 네이비/다크블루 → 신뢰, 전문성\n• 그린/틸 → 성장, 안정\n• 레드/오렌지 → 긴박감, 에너지\n'예쁜 색'이 아니라 '고객에게 주고 싶은 첫 감정'으로 선택하세요." }
+      },
+      { id:"kws", lbl:"브랜드 키워드 (최대 3개)", sub:"당신 회사를 설명하는 단어를 골라주세요",
+        type:"tags",
+        opts:["신뢰","전문","결과","실행","친근","혁신","안정","빠름","꼼꼼","성장","투명","차별화"],
+        max:3,
+        ins:{ t:"브랜드 키워드가 중요한 이유", b:"이 3단어가 웹사이트 전체 카피의 톤을 결정합니다.\n'신뢰·전문·결과' → 데이터·수치 중심 카피\n'친근·빠름·실행' → 대화체, 행동 유발 중심 카피" }
+      }
+    ]
+  },
+  {
+    id:6, emoji:"📞",
+    title:"어떻게 찾아오게 하실 건가요?",
+    sub:"연락처 & 사업자 정보",
+    intro:"지금까지 쌓아온 모든 콘텐츠는\n결국 이 한 버튼을 누르게 만들기 위한 것입니다.\n\n고객이 연락했을 때 가장 빠르게 응답할 수 있는 채널을 알려주세요.\n첫 응답 속도가 곧 첫인상입니다.",
+    doneMsg:"✓ 모든 섹션 완료! 웹사이트를 생성하고 있습니다...",
+    friction:null,
+    qs:[
+      { id:"phone", lbl:"대표 연락처", sub:"고객 문의를 가장 빠르게 받을 수 있는 번호",
+        type:"text", fmt:"phone", ph:"010-1234-5678", req:true,
+        ins:{ t:"빠른 응답이 중요한 이유", b:"문의 후 5분 이내 응답 시 전환율이 30분 후 응답 대비 21배 높습니다. 가장 빠른 응답 채널을 우선 노출하세요." }
+      },
+      { id:"email", lbl:"이메일", sub:"상담 문의를 받을 이메일 주소",
+        type:"text", fmt:"email", ph:"contact@company.com", req:false
+      },
+      { id:"address", lbl:"주소 (선택)", sub:"사무실 또는 운영 주소가 있으신가요?",
+        type:"text", ph:"예) [시/도] [구/시] [상세주소]", req:false,
+        ins:{ t:"주소 공개가 중요한 이유", b:"실제 주소가 공개된 회사는 온라인 신뢰도가 올라갑니다. '여기 찾아갈 수 있다'는 느낌이 B2B 신뢰의 기본 장치입니다." }
+      }
+    ]
+  }
+];
+
+const FRICTION = {
+  vague_target:{
+    ttl:"잠깐, 이 질문이 제일 중요합니다",
+    bd:"'중소기업 사장님'은 대한민국 인구의 절반입니다.\n그 모두에게 말을 거는 웹사이트는 실제로 아무에게도 말을 걸지 않는 것과 같습니다.\n\n조금 더 구체적으로 써주세요.\n업종 + 규모 + 상황, 세 가지 중 하나라도 추가하면 훨씬 강력한 웹사이트가 됩니다.",
+    btns:[
+      {t:"✏️ 다시 써볼게요",c:"pri",a:"revise"},
+      {t:"이대로 진행할게요",c:"sec",a:"go"},
+      {t:"🤝 어렵네요 — 전문가 도움받기",c:"acc",a:"cta"}
+    ]
+  },
+  unknown_pain:{
+    ttl:"고객의 고통을 모르면,\n해결책을 팔 수 없습니다",
+    bd:"이 질문이 어렵다면, 지금 당장 해볼 수 있는 것이 있습니다.\n\n최근 고객 2명에게 전화해서 딱 하나만 물어보세요.\n\"저를 처음 찾게 된 이유가 뭐였나요?\"\n\n그 대답 그대로가 당신 웹사이트의 가장 강력한 카피가 됩니다.",
+    btns:[
+      {t:"✏️ 알겠어요, 다시 써볼게요",c:"pri",a:"revise"},
+      {t:"일단 이대로 진행할게요",c:"sec",a:"go"},
+      {t:"🤝 이 부분 전문가와 함께 정리하고 싶어요",c:"acc",a:"cta"}
+    ]
+  },
+  vague_diff:{
+    ttl:"잠깐, 경쟁사도\n똑같이 말하고 있습니다",
+    bd:"지금 입력하신 내용을 경쟁사 웹사이트에서도 99% 확률로 찾을 수 있습니다.\n\n'합리적 가격', '풍부한 경험', '친절한 서비스'는 차별화가 아닙니다. 기본값입니다.\n\n당신이 경쟁사와 다르게 '하는 것'이 있다면 무엇인가요?\n과정, 방법, 특정 고객군, 보장 조건 — 무엇이든 좋습니다.",
+    btns:[
+      {t:"✏️ 다시 생각해볼게요",c:"pri",a:"revise"},
+      {t:"이대로 진행할게요",c:"sec",a:"go"},
+      {t:"🤝 차별점 찾는 것부터 도움받고 싶어요",c:"acc",a:"cta"}
+    ]
+  }
+};
+
+const GAPS = [
+  { lbl:"TAGLINE — 가장 큰 차이가 나는 카피",
+    b:"[업종] 전문 회사입니다",
+    a:"[고객이 진짜 원하는 것], [브랜드 약속 동사]합니다",
+    i:"'무엇을 하는 회사' → '고객에게 무엇이 되어주는 회사'로 전환" },
+  { lbl:"HERO HEADLINE — 첫 문장의 차이",
+    b:"[서비스명] 전문 N년 [회사 유형]",
+    a:"[고객의 상황을 직격하는 문장] — 지금 놓치고 있을 뿐입니다",
+    i:"회사 소개 → 고객의 상황·감정 직격" },
+  { lbl:"페인포인트 카드 — 공감의 차이",
+    b:"[관련 업무]가 복잡합니다",
+    a:"[관련 업무]가 뭔 말인지 모르겠고, 잘못 하면 [손해]가 생길까봐 두려우신가요?",
+    i:"설명 → 공감·질문 형식 전환 (고객이 '나 얘기잖아' 반응 유도)" },
+  { lbl:"차별화 포인트 — 구체성의 차이",
+    b:"오랜 경험과 전문성으로 함께합니다",
+    a:"N년간 [지역·고객군] NNN건 — [서비스 단계]부터 [마지막]까지 대표님 옆에서 직접 진행",
+    i:"추상적 미덕 → 구체적 숫자 + 행동 묘사" },
+  { lbl:"CTA 버튼 — 클릭률의 차이",
+    b:"문의하기",
+    a:"우리 회사에 맞는 [서비스] 알아보기 →",
+    i:"행동 요청 → 고객 관점의 결과 제시로 전환" }
+];
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  STATE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const st = { cur:0, ans:{}, tags:{}, shown:{} };
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  UTILS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const $ = id => document.getElementById(id);
+
+function toast(msg, ms=2800){
+  const el=$('toast');
+  el.textContent=msg;
+  el.classList.add('on');
+  setTimeout(()=>el.classList.remove('on'), ms);
+}
+
+function save(id, val){ st.ans[id]=val; }
+function get(id){ return st.ans[id]||''; }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  FRICTION CHECK
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function checkFriction(idx){
+  const sec = SECS[idx];
+  if(!sec.friction || st.shown[sec.friction]) return false;
+  const key = sec.friction;
+
+  if(key==='vague_target'){
+    const v = get('persona').trim();
+    if(!v) return false;
+    const wc = v.split(/\s+/).length;
+    const vague = ['중소기업','스타트업','사장님','모든 분','다양한','일반적'];
+    return wc<=6 || vague.some(w=>v.includes(w));
+  }
+  if(key==='unknown_pain'){
+    const p1=get('pain1').trim(), p2=get('pain2').trim(), p3=get('pain3').trim();
+    return !p1 || [p1,p2,p3].filter(p=>!p).length>=2;
+  }
+  if(key==='vague_diff'){
+    const d = get('diff1').trim().toLowerCase();
+    if(!d) return false;
+    const wc = d.split(/\s+/).length;
+    const vague=['가격','친절','경험','실력','오래'];
+    return wc<=4 && vague.some(w=>d.includes(w));
+  }
+  return false;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  MODAL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+let _modalCb = null;
+
+function openModal(key, cb){
+  const d = FRICTION[key];
+  $('m-ttl').textContent = d.ttl;
+  $('m-bd').innerHTML = d.bd.replace(/\n/g,'<br>');
+  const acts = $('m-acts');
+  acts.innerHTML='';
+  d.btns.forEach(b=>{
+    const btn=document.createElement('button');
+    btn.className=`m-btn ${b.c}`;
+    btn.textContent=b.t;
+    btn.onclick=()=>{
+      closeModal();
+      st.shown[key]=true;
+      if(b.a==='revise'){}
+      else if(b.a==='go') cb();
+      else if(b.a==='cta') ctaModal();
+    };
+    acts.appendChild(btn);
+  });
+  $('overlay').classList.add('on');
+  _modalCb=cb;
+}
+
+function ctaModal(){
+  $('m-ttl').textContent='FRISAT 전문가와 함께 완성하기';
+  $('m-bd').innerHTML='마케팅 전문가가 직접 인터뷰해 당신의 회사에 딱 맞는<br>웹사이트 전략을 설계해드립니다.<br><br>• 소요 시간: 30분 화상 미팅<br>• 비용: 완전 무료<br>• 결과물: 완성된 B2B 웹사이트 + 마케팅 전략';
+  const acts=$('m-acts');
+  acts.innerHTML='';
+  const b1=document.createElement('button');
+  b1.className='m-btn pri';
+  b1.textContent='🎯 FRISAT 무료 상담 신청하기';
+  b1.onclick=()=>{ closeModal(); toast('🎉 잠시 후 상담 신청 페이지로 이동합니다'); };
+  const b2=document.createElement('button');
+  b2.className='m-btn sec';
+  b2.textContent='폼 계속 채울게요';
+  b2.onclick=closeModal;
+  acts.appendChild(b1); acts.appendChild(b2);
+  $('overlay').classList.add('on');
+}
+
+function closeModal(){ $('overlay').classList.remove('on'); }
+
+function overlayClick(e){
+  if(e.target===$('overlay')) closeModal();
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  RENDER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function fmtPhone(el, id){
+  let v=el.value.replace(/\D/g,'');
+  let f='';
+  if(v.startsWith('02')){
+    if(v.length<=2) f=v;
+    else if(v.length<=6) f=v.slice(0,2)+'-'+v.slice(2);
+    else if(v.length<=9) f=v.slice(0,2)+'-'+v.slice(2,5)+'-'+v.slice(5);
+    else f=v.slice(0,2)+'-'+v.slice(2,6)+'-'+v.slice(6,10);
+  } else {
+    if(v.length<=3) f=v;
+    else if(v.length<=7) f=v.slice(0,3)+'-'+v.slice(3);
+    else if(v.length<=11) f=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7);
+    else f=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
+  }
+  el.value=f; save(id,f);
+}
+
+function renderQ(q){
+  let inp='';
+  if(q.type==='text'){
+    const itype = q.fmt==='phone'?'tel': q.fmt==='email'?'email':'text';
+    const oi = q.fmt==='phone'
+      ? `fmtPhone(this,'${q.id}')`
+      : `save('${q.id}',this.value)${q.limit?`;upCC('${q.id}',this,${q.limit})`:''}`;
+    inp=`<input class="inp" id="inp-${q.id}" type="${itype}" placeholder="${q.ph||''}" oninput="${oi}">`;
+    if(q.fmt==='phone') inp+=`<div class="q-fmt-hint">형식: 010-0000-0000 · 02-000-0000</div>`;
+    if(q.fmt==='email') inp+=`<div class="q-fmt-hint">형식: yourname@company.com</div>`;
+    if(q.limit) inp+=`<div class="char-cnt" id="cc-${q.id}">0 / ${q.limit}</div>`;
+  } else if(q.type==='textarea'){
+    inp=`<textarea class="inp" id="inp-${q.id}" rows="3" placeholder="${q.ph||''}"
+      oninput="save('${q.id}',this.value)"></textarea>`;
+  } else if(q.type==='color'){
+    const def=q.def||'#4F46E5';
+    inp=`<div class="color-row">
+      <div class="color-preview" id="cprev-${q.id}" style="background:${def}" onclick="document.getElementById('cpick-${q.id}').click()"></div>
+      <input type="color" id="cpick-${q.id}" value="${def}" oninput="syncColor('${q.id}',this.value)">
+      <input class="inp hex-inp" id="chex-${q.id}" type="text" value="${def}" placeholder="#000000"
+        oninput="syncHex('${q.id}',this.value)">
+      <span class="color-hint">클릭해서 컬러 선택</span>
+    </div>`;
+  } else if(q.type==='tags'){
+    const chips=(q.opts||[]).map(o=>
+      `<button class="tag-chip" type="button" data-tag="${o}" data-qid="${q.id}"
+        onclick="toggleTag('${q.id}','${o}',${q.max||3},this)">${o}</button>`
+    ).join('');
+    inp=`<div class="tag-wrap" id="tags-${q.id}">${chips}</div>`;
+  }
+  const ins=q.ins?`
+    <button class="ins-btn" onclick="toggleIns(this,'ibody-${q.id}')">
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M7 6.5V10M7 4.5V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      💡 ${q.ins.t}
+      <svg class="arr" width="11" height="11" viewBox="0 0 12 12" fill="none">
+        <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="ins-body" id="ibody-${q.id}">
+      ${q.ins.b.replace(/\n/g,'<br>')}
+    </div>`:'' ;
+  return `<div class="q-item">
+    <label class="q-lbl" for="inp-${q.id}">${q.lbl}${q.req?'<span class="q-req">*</span>':''}</label>
+    ${q.sub?`<div class="q-sub">${q.sub}</div>`:''}
+    ${inp}${ins}
+  </div>`;
+}
+
+function renderSec(idx){
+  const sec=SECS[idx];
+  let qsHTML=sec.qs.map(renderQ).join('');
+  $('sec-container').innerHTML=`
+    <div class="sec-card">
+      <div class="sec-intro">
+        <div class="sec-tag">${sec.emoji} 섹션 ${sec.id} / 6 — ${sec.sub}</div>
+        <div class="sec-title">${sec.title}</div>
+        <div class="sec-intro-txt">${sec.intro}</div>
+      </div>
+      <div class="questions">${qsHTML}</div>
+    </div>`;
+
+  // Restore values
+  sec.qs.forEach(q=>{
+    if(q.type==='color'){
+      const v=get(q.id)||q.def||'#4F46E5';
+      const prev=document.getElementById(`cprev-${q.id}`);
+      const pick=document.getElementById(`cpick-${q.id}`);
+      const hex=document.getElementById(`chex-${q.id}`);
+      if(prev) prev.style.background=v;
+      if(pick) pick.value=v;
+      if(hex) hex.value=v;
+    } else if(q.type==='tags'){
+      (st.tags[q.id]||[]).forEach(tag=>{
+        const chip=document.querySelector(`[data-tag="${tag}"][data-qid="${q.id}"]`);
+        if(chip) chip.classList.add('sel');
+      });
+    } else {
+      const el=document.getElementById(`inp-${q.id}`);
+      if(el) el.value=get(q.id);
+      if(q.limit && el) upCC(q.id, el, q.limit);
+    }
+  });
+
+  updateSidebar(idx);
+  updateNav(idx);
+  // Scroll form body (not window) to top
+  const fb=$('form-body');
+  if(fb) fb.scrollTop=0;
+}
+
+function upCC(id, el, lim){
+  const n=el.value.length;
+  const cc=document.getElementById(`cc-${id}`);
+  if(!cc) return;
+  cc.textContent=`${n} / ${lim}`;
+  cc.className='char-cnt'+(n>lim*0.85?' near':'')+(n>lim?' over':'');
+}
+
+function syncColor(id, val){
+  const prev=document.getElementById(`cprev-${id}`);
+  const hex=document.getElementById(`chex-${id}`);
+  if(prev) prev.style.background=val;
+  if(hex) hex.value=val;
+  save(id, val);
+}
+
+function syncHex(id, val){
+  if(/^#[0-9A-Fa-f]{6}$/.test(val)){
+    const pick=document.getElementById(`cpick-${id}`);
+    const prev=document.getElementById(`cprev-${id}`);
+    if(pick) pick.value=val;
+    if(prev) prev.style.background=val;
+    save(id, val);
+  }
+}
+
+function toggleTag(qid, tag, max, el){
+  if(!st.tags[qid]) st.tags[qid]=[];
+  const arr=st.tags[qid], i=arr.indexOf(tag);
+  if(i>-1){ arr.splice(i,1); el.classList.remove('sel'); }
+  else {
+    if(arr.length>=max){ toast(`⚠️ 최대 ${max}개까지 선택 가능합니다`); return; }
+    arr.push(tag); el.classList.add('sel');
+  }
+  save(qid, arr.join(', '));
+}
+
+function toggleIns(btn, bodyId){
+  const body=document.getElementById(bodyId);
+  body.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  PROGRESS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function updateSidebar(idx){
+  // Section list
+  const secsEl=$('sb-secs');
+  if(secsEl){
+    secsEl.innerHTML=SECS.map((s,i)=>{
+      const state=i<idx?'done':i===idx?'active':'';
+      const dot=i<idx?'✓':(i+1);
+      return `<div class="sb-sec-item ${state}">
+        <div class="sb-sec-dot">${dot}</div>
+        <div class="sb-sec-info">
+          <div class="sb-sec-sub">${s.emoji} 섹션 ${i+1}</div>
+          <div class="sb-sec-name">${s.title}</div>
+        </div>
+      </div>`;
+    }).join('');
+    // Scroll active item into view
+    const active=secsEl.querySelector('.active');
+    if(active) active.scrollIntoView({block:'nearest'});
+  }
+  // Time remaining (5 min per section)
+  const remaining=(SECS.length-idx)*5;
+  const tn=$('sb-time-num');
+  if(tn) tn.textContent=remaining;
+  // Progress bar
+  const pf=$('sb-prog-fill');
+  if(pf) pf.style.width=(idx/SECS.length*100)+'%';
+}
+
+function updateNav(idx){
+  $('nav-ctr').textContent=`${idx+1} / ${SECS.length}`;
+  $('btn-prev').style.visibility=idx===0?'hidden':'visible';
+  $('btn-next').textContent=idx===SECS.length-1?'웹사이트 생성하기 ✨':'다음 →';
+  // 섹션 3,4,5 (idx 2,3,4) 는 건너뛰기 가능
+  const skip=$('btn-skip');
+  if(skip) skip.style.display=[2,3,4].includes(idx)?'inline-block':'none';
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  NAVIGATION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function validate(idx){
+  const sec=SECS[idx];
+  let ok=true;
+  sec.qs.filter(q=>q.req).forEach(q=>{
+    const v=get(q.id);
+    if(!v||!v.trim()){
+      ok=false;
+      const el=document.getElementById(`inp-${q.id}`);
+      if(el){ el.classList.add('err'); setTimeout(()=>el.classList.remove('err'),2500); }
+    }
+    if(q.limit && v && v.length>q.limit){ ok=false; toast(`⚠️ "${q.lbl}" 항목이 ${q.limit}자를 초과했습니다`); }
+  });
+  if(!ok) toast('⚠️ 필수 항목을 모두 채워주세요');
+  return ok;
+}
+
+function nextSec(){
+  if(!validate(st.cur)) return;
+  if(checkFriction(st.cur)){
+    const key=SECS[st.cur].friction;
+    openModal(key, advance);
+    return;
+  }
+  advance();
+}
+
+function advance(){
+  const sec=SECS[st.cur];
+  toast(sec.doneMsg);
+  if(st.cur===SECS.length-1){ setTimeout(showDone, 600); return; }
+  st.cur++;
+  renderSec(st.cur);
+}
+
+function prevSec(){
+  if(st.cur===0) return;
+  st.cur--;
+  renderSec(st.cur);
+}
+
+function skipSec(){
+  if(st.cur===SECS.length-1){ showDone(); return; }
+  toast('⏭ 섹션을 건너뛰었습니다 — 나중에 추가할 수 있어요');
+  st.cur++;
+  renderSec(st.cur);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  COMPLETION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function meetingCTA(){
+  toast('🎯 30분 진단 미팅 예약 페이지로 연결합니다');
+}
+
+function detectGaps(){
+  const gaps = [];
+  const pain1 = get('pain1').trim();
+  const diff1  = get('diff1').trim();
+  const stat1  = get('stat1').trim();
+  const persona= get('persona').trim();
+  const persona2=get('persona2').trim();
+  const pain2  = get('pain2').trim();
+  const pain3  = get('pain3').trim();
+
+  // 페인포인트 — 비어있거나 너무 짧음
+  if(!pain1 || pain1.split(/\s+/).length < 5)
+    gaps.push({ icon:'💬', lbl:'고객 공감 언어', sev:'high',
+      desc:'고객이 "나 얘기잖아"를 느끼는 페인포인트 카피가 비어있어요. B2B에서 공감 없이는 문의 버튼이 눌리지 않습니다.' });
+
+  // 차별화 — 비어있거나 모호
+  const vagueWords = ['가격','친절','경험','실력','오래','빠른','전문'];
+  if(!diff1 || diff1.split(/\s+/).length < 5 || vagueWords.some(w=>diff1.includes(w)))
+    gaps.push({ icon:'🏆', lbl:'차별화 포인트', sev:'high',
+      desc:'경쟁사도 똑같이 말하는 표현이 있거나 비어있어요. "왜 여기?"에 대한 구체적 답이 없으면 가격 비교로 끝납니다.' });
+
+  // 신뢰 수치
+  if(!stat1)
+    gaps.push({ icon:'📊', lbl:'신뢰 수치', sev:'med',
+      desc:'숫자로 증명되는 실적이 없어요. "NNN건 이상", "NN% 재의뢰율" 하나가 텍스트 10줄보다 강합니다.' });
+
+  // 타겟 공통점
+  if(!persona2)
+    gaps.push({ icon:'🎯', lbl:'타겟 고객 공통점', sev:'med',
+      desc:'"이런 분들께 특히 추천합니다" 섹션이 비어있어요. 타겟이 흐릿하면 리드 품질이 떨어집니다.' });
+
+  return gaps.slice(0,4);
+}
+
+function showDone(){
+  $('scr-form').classList.remove('on');
+  $('scr-done').classList.add('on');
+
+  const co    = get('co_ko')   || '내 회사';
+  const tl    = get('tagline') || '[캐치프레이즈]';
+  const area  = get('area')    || '';
+  const pain1 = get('pain1')   || '';
+  const diff1 = get('diff1')   || '';
+  const slug  = co.replace(/\s+/g,'-').toLowerCase() || 'my-company';
+
+  const gaps = detectGaps();
+  const gapsHTML = gaps.map(g=>`
+    <div class="gap-item">
+      <div class="gap-item-icon">${g.icon}</div>
+      <div class="gap-item-body">
+        <div class="gap-item-title">
+          ${g.lbl}
+          <span class="gap-badge gap-badge-${g.sev}">${g.sev==='high'?'필수 보완':'권장 보완'}</span>
+        </div>
+        <div class="gap-item-desc">${g.desc}</div>
+      </div>
+    </div>`).join('');
+
+  const noGapMsg = gaps.length===0 ? `
+    <div class="gap-item">
+      <div class="gap-item-icon">✅</div>
+      <div class="gap-item-body">
+        <div class="gap-item-title">기본 정보가 잘 채워졌습니다!</div>
+        <div class="gap-item-desc">진단 미팅에서 카피 디테일과 리드 전환 구조를 더 정교하게 다듬어드립니다.</div>
+      </div>
+    </div>` : '';
+
+  const painRow = pain1 ? `<div class="site-preview-pain">💢 ${pain1}</div>` : '';
+  const diffRow = diff1 ? `<div class="site-preview-diff">✓ ${diff1}</div>` : '';
+
+  $('scr-done').innerHTML=`
+    <div class="done-header">
+      <div class="start-logo" style="margin-bottom:0">
+        <div class="logo-squares">
+          <div class="logo-sq" style="background:#C0E0DB"></div>
+          <div class="logo-sq" style="background:#F7A7A6"></div>
+          <div class="logo-sq-main" style="background:#6C31D4;box-shadow:0 0 0 2px white,0 0 0 3.5px #6C31D4"></div>
+          <div class="logo-sq" style="background:#8390CA"></div>
+          <div class="logo-sq" style="background:#C8B8F0"></div>
+        </div>
+        <div class="logo-wordmark" style="color:#1A1238">
+          <span style="color:#6C31D4;font-weight:900">[</span>FRI<span style="color:#6C31D4">S</span>AT<span style="color:#6C31D4;font-weight:900">]</span>
+        </div>
+      </div>
+    </div>
+    <div class="done-content">
+    <div class="done-hero">
+      <div class="done-emo">✅</div>
+      <h2>웹사이트 초안이 완성됐습니다</h2>
+      <p>이제 진짜 웹사이트로 만들어봐요. 30분이면 충분합니다.</p>
+    </div>
+
+    <div class="site-preview-card">
+      <div class="site-preview-bar">
+        <div class="site-preview-dots"><span></span><span></span><span></span></div>
+        <div class="site-preview-url">${slug}.vercel.app</div>
+      </div>
+      <div class="site-preview-body">
+        <div class="site-preview-hero">
+          <div class="site-preview-tagline">${tl}</div>
+          <div class="site-preview-sub">${co}${area?' · '+area:''}</div>
+          <div class="site-preview-cta-btn">무료 상담 신청하기 →</div>
+        </div>
+        ${painRow}${diffRow}
+      </div>
+      <div class="site-preview-footer">
+        <button class="site-deploy-btn" onclick="launchPreview()">웹사이트 새 탭에서 열기 →</button>
+      </div>
+    </div>
+
+    <div class="diag-sec">
+      <div class="diag-sec-hd">
+        <div class="diag-sec-badge">🔍 진단 결과</div>
+        <h3>지금 이 웹사이트의 빈 공간</h3>
+        <p>30분 미팅에서 이 부분들을 채우면 완성됩니다.</p>
+      </div>
+      <div class="gap-items">${gapsHTML}${noGapMsg}</div>
+    </div>
+
+    <div class="journey-sec">
+      <p class="journey-lbl">이렇게 완성됩니다</p>
+      <div class="j-steps">
+        <div class="j-step j-step-done">
+          <div class="j-dot j-dot-done">✓</div>
+          <div><div class="j-title">초안 완성</div><div class="j-sub">지금 이 페이지</div></div>
+        </div>
+        <div class="j-step">
+          <div class="j-dot j-dot-next">2</div>
+          <div><div class="j-title">30분 진단 미팅</div><div class="j-sub">빈 공간 채우기 · 전문가 동행</div></div>
+        </div>
+        <div class="j-step">
+          <div class="j-dot">3</div>
+          <div><div class="j-title">완성 버전 공유</div><div class="j-sub">PDF + 미리보기 링크</div></div>
+        </div>
+        <div class="j-step">
+          <div class="j-dot">4</div>
+          <div><div class="j-title">정식 배포<span class="j-badge-opt">선택 · 50만원</span></div><div class="j-sub">Vercel 배포 + 도메인 연결</div></div>
+        </div>
+        <div class="j-step">
+          <div class="j-dot">5</div>
+          <div><div class="j-title">리드 시스템 구축<span class="j-badge-opt">선택</span></div><div class="j-sub">리드 수집 · 콘텐츠 엔진 · 너처링</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meeting-cta">
+      <div class="meeting-badge">무료 · 30분 · 화상 미팅</div>
+      <h3>30분 진단 미팅 예약하기</h3>
+      <p>지금 채운 내용을 바탕으로, 빈 공간을<br>전문가와 함께 빠르게 채워드립니다.</p>
+      <button class="btn-meeting" onclick="meetingCTA()">30분 진단 미팅 예약하기 →</button>
+      <button class="btn-preview-only" onclick="launchPreview()">지금 초안 상태로 먼저 보기</button>
+    </div>
+    </div>`; /* close done-content */
+
+  $('scr-done').scrollTop = 0;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  SITE GENERATOR
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function lighten(hex, t){
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  const lr=Math.round(r+(255-r)*t), lg=Math.round(g+(255-g)*t), lb=Math.round(b+(255-b)*t);
+  return `#${lr.toString(16).padStart(2,'0')}${lg.toString(16).padStart(2,'0')}${lb.toString(16).padStart(2,'0')}`;
+}
+
+function generateSite(){
+  const co    = get('co_ko')   || '회사명';
+  const tl    = get('tagline') || '고객의 성과를 함께 만들어갑니다';
+  const area  = get('area')    || '';
+  const years = get('years')   || '';
+  const color = (get('color1')||'#1E3A8A').trim();
+  const phone = get('phone')   || '';
+  const email = get('email')   || '';
+  const addr  = get('address') || '';
+  const pain1 = get('pain1')   || '';
+  const pain1d= get('pain1d')  || '';
+  const pain2 = get('pain2')   || '';
+  const pain3 = get('pain3')   || '';
+  const diff1 = get('diff1')   || '';
+  const diff2 = get('diff2')   || '';
+  const diff3 = get('diff3')   || '';
+  const stat1 = get('stat1')   || '';
+  const kws   = get('kws')     || '';
+
+  const cLight = lighten(color, 0.88);
+  const slug   = co.replace(/\s+/g,'-').replace(/[^\w-]/g,'').toLowerCase() || 'my-company';
+
+  const pains = [
+    pain1?{t:pain1,d:pain1d}:null,
+    pain2?{t:pain2,d:''}:null,
+    pain3?{t:pain3,d:''}:null
+  ].filter(Boolean);
+
+  const diffs = [
+    diff1?{t:diff1}:null,
+    diff2?{t:diff2}:null,
+    diff3?{t:diff3}:null
+  ].filter(Boolean);
+
+  const icons = ['✦','◆','▲'];
+
+  const statBadges = [stat1, years, area].filter(Boolean)
+    .map(s=>`<div class="stat-chip">${s}</div>`).join('');
+
+  const painSection = pains.length ? `
+  <section class="sec sec-gray">
+    <div class="wrap">
+      <p class="eyebrow">고객 공감</p>
+      <h2 class="sec-ttl">혹시 이런 어려움을<br>겪고 계신가요?</h2>
+      <div class="card-grid">
+        ${pains.map((p,i)=>`
+        <div class="pain-card">
+          <div class="pain-num">0${i+1}</div>
+          <div class="pain-body">
+            <div class="pain-title">${p.t}</div>
+            ${p.d?`<div class="pain-desc">${p.d}</div>`:''}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>` : '';
+
+  const whySection = diffs.length ? `
+  <section class="sec sec-white">
+    <div class="wrap">
+      <p class="eyebrow">차별화</p>
+      <h2 class="sec-ttl">왜 ${co}인가요?</h2>
+      <div class="card-grid why-grid">
+        ${diffs.map((d,i)=>`
+        <div class="why-card">
+          <div class="why-ico" style="background:${color};color:white">${icons[i]}</div>
+          <div class="why-txt">${d.t}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>` : '';
+
+  const kwTags = kws ? kws.split(',').map(k=>`<span class="kw-tag">#${k.trim()}</span>`).join('') : '';
+
+  return `<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${co} — ${tl}</title>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--p:${color};--pl:${cLight};--dark:#1A1238;--muted:#8A87B8}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;color:#1A1238;line-height:1.7;background:#F9F8FF}
+a{text-decoration:none}
+.wrap{max-width:1060px;margin:0 auto;padding:0 28px}
+
+/* NAV */
+.gnb{position:sticky;top:0;background:rgba(26,18,56,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:100;padding:0 28px;height:66px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(108,49,212,0.2)}
+.gnb-logo{font-size:18px;font-weight:800;color:white;letter-spacing:-0.02em}
+.gnb-logo .bkt{color:#C0E0DB}
+.gnb-logo .hi{color:#C0E0DB}
+.gnb-meta{display:flex;align-items:center;gap:18px}
+.gnb-phone{font-size:14px;font-weight:600;color:rgba(255,255,255,0.7)}
+.gnb-btn{background:#6C31D4;color:white;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:background .2s}
+.gnb-btn:hover{background:#5A28B5}
+
+/* HERO */
+.hero{background:linear-gradient(140deg,#1A1238 0%,${color} 100%);padding:100px 28px 96px;text-align:center;color:white;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;border-radius:50%;background:rgba(192,224,219,0.12);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-60px;left:-60px;width:240px;height:240px;border-radius:50%;background:rgba(247,167,166,0.10);pointer-events:none}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-size:13px;font-weight:600;padding:6px 18px;border-radius:99px;margin-bottom:28px;position:relative}
+.hero h1{font-size:clamp(28px,5vw,50px);font-weight:800;line-height:1.3;margin-bottom:18px;position:relative}
+.hero-sub{font-size:16px;color:rgba(255,255,255,.68);max-width:540px;margin:0 auto 34px;line-height:1.85;position:relative}
+.stat-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:36px;position:relative}
+.stat-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:white;font-size:14px;font-weight:600;padding:8px 20px;border-radius:99px}
+.hero-cta{display:inline-block;background:white;color:#6C31D4;padding:16px 38px;border-radius:10px;font-size:17px;font-weight:800;border:none;cursor:pointer;font-family:inherit;transition:transform .2s,box-shadow .2s;position:relative}
+.hero-cta:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(108,49,212,.35)}
+.hero-note{margin-top:14px;font-size:13px;color:rgba(255,255,255,.38);position:relative}
+
+/* SECTIONS */
+.sec{padding:88px 0}
+.sec-gray{background:#F9F8FF}
+.sec-white{background:white}
+.eyebrow{display:inline-block;background:#E8DFFF;color:#6C31D4;font-size:12px;font-weight:700;padding:5px 14px;border-radius:99px;margin-bottom:14px;letter-spacing:.04em}
+.sec-ttl{font-size:clamp(24px,4vw,36px);font-weight:800;line-height:1.35;margin-bottom:52px;color:#1A1238}
+
+/* PAIN */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.pain-card{background:white;border-radius:16px;padding:28px 24px;border:1.5px solid rgba(108,49,212,0.12);box-shadow:0 4px 16px rgba(108,49,212,0.06)}
+.pain-num{font-size:34px;font-weight:800;color:#E8DFFF;line-height:1;margin-bottom:12px}
+.pain-title{font-size:16px;font-weight:700;color:#1A1238;line-height:1.5;margin-bottom:8px}
+.pain-desc{font-size:14px;color:#8A87B8;line-height:1.7}
+
+/* WHY */
+.why-grid{gap:20px}
+.why-card{background:white;border-radius:16px;padding:28px 24px;border:1.5px solid rgba(108,49,212,0.12);box-shadow:0 4px 16px rgba(108,49,212,0.06);display:flex;gap:16px;align-items:flex-start}
+.why-ico{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;flex-shrink:0;background:#6C31D4;color:white}
+.why-txt{font-size:15px;font-weight:600;line-height:1.7;color:#1A1238}
+
+/* CONTACT */
+.sec-contact{background:linear-gradient(140deg,#1A1238 0%,${color} 100%);padding:88px 0;color:white;position:relative;overflow:hidden}
+.sec-contact::before{content:'';position:absolute;top:-60px;right:-60px;width:260px;height:260px;border-radius:50%;background:rgba(192,224,219,0.12);pointer-events:none}
+.contact-inner{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;position:relative}
+.contact-left h2{font-size:clamp(22px,3.5vw,32px);font-weight:800;margin-bottom:14px;line-height:1.35}
+.contact-left p{font-size:15px;color:rgba(255,255,255,.65);line-height:1.85;margin-bottom:32px}
+.ci-list{display:flex;flex-direction:column;gap:16px}
+.ci-item{display:flex;gap:14px;align-items:center}
+.ci-ico{width:38px;height:38px;background:rgba(255,255,255,.12);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.ci-val{font-size:15px;font-weight:600;color:white}
+.contact-form{background:white;border-radius:18px;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.cf-ttl{font-size:17px;font-weight:700;color:#1A1238;margin-bottom:20px}
+.cf-row{margin-bottom:14px}
+.cf-row label{display:block;font-size:13px;font-weight:600;color:#8A87B8;margin-bottom:6px}
+.cf-row input,.cf-row textarea{width:100%;padding:10px 13px;border:1.5px solid rgba(108,49,212,0.15);border-radius:8px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;color:#1A1238;background:#F9F8FF}
+.cf-row input:focus,.cf-row textarea:focus{border-color:#6C31D4;background:white}
+.cf-row textarea{min-height:80px;resize:vertical}
+.cf-submit{width:100%;padding:14px;background:#6C31D4;color:white;border:none;border-radius:9px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .2s;margin-top:4px}
+.cf-submit:hover{background:#5A28B5}
+
+/* FOOTER */
+footer{background:#0F0C1E;color:rgba(255,255,255,.4);padding:40px 28px;text-align:center}
+.ft-logo{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px}
+.ft-sq{width:7px;height:7px;border-radius:1.5px}
+.ft-co{font-size:16px;font-weight:800;color:rgba(255,255,255,.75);letter-spacing:-0.02em}
+.ft-co .bkt{color:#C0E0DB}
+.ft-co .hi{color:#C0E0DB}
+.kw-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px}
+.kw-tag{background:rgba(108,49,212,.2);color:rgba(255,255,255,.5);font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid rgba(108,49,212,.3)}
+.ft-copy{font-size:12px}
+
+@media(max-width:680px){
+  .contact-inner{grid-template-columns:1fr}
+  .gnb-phone{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="gnb">
+  <div class="gnb-logo"><span class="bkt">[</span>${co}<span class="bkt">]</span></div>
+  <div class="gnb-meta">
+    ${phone?`<span class="gnb-phone">📞 ${phone}</span>`:''}
+    <button class="gnb-btn" onclick="document.querySelector('.sec-contact').scrollIntoView({behavior:'smooth'})">무료 상담 신청</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    ${(area||years)?`<div class="hero-badge">${[area,years].filter(Boolean).join(' · ')}</div>`:''}
+    <h1>${tl}</h1>
+    <p class="hero-sub">${co}과 함께라면 처음부터 끝까지, 전문가의 동행이 보장됩니다.</p>
+    ${statBadges?`<div class="stat-row">${statBadges}</div>`:''}
+    <button class="hero-cta" onclick="document.querySelector('.sec-contact').scrollIntoView({behavior:'smooth'})">
+      지금 무료 상담 신청하기 →
+    </button>
+    <div class="hero-note">부담 없이 연락주세요 — 첫 상담은 완전 무료입니다</div>
+  </div>
+</section>
+
+${painSection}
+${whySection}
+
+<section class="sec-contact">
+  <div class="wrap">
+    <div class="contact-inner">
+      <div class="contact-left">
+        <h2>지금 바로<br>문의해보세요</h2>
+        <p>첫 상담은 무료입니다.<br>간단한 문의만으로 시작할 수 있습니다.</p>
+        <div class="ci-list">
+          ${phone?`<div class="ci-item"><div class="ci-ico">📞</div><div class="ci-val">${phone}</div></div>`:''}
+          ${email?`<div class="ci-item"><div class="ci-ico">✉️</div><div class="ci-val">${email}</div></div>`:''}
+          ${addr ?`<div class="ci-item"><div class="ci-ico">📍</div><div class="ci-val">${addr}</div></div>`:''}
+        </div>
+      </div>
+      <div class="contact-form">
+        <div class="cf-ttl">상담 신청서</div>
+        <div class="cf-row"><label>회사명 / 이름</label><input type="text" placeholder="회사명 또는 성함"></div>
+        <div class="cf-row"><label>연락처</label><input type="tel" placeholder="010-0000-0000"></div>
+        <div class="cf-row"><label>문의 내용</label><textarea placeholder="궁금한 점을 자유롭게 적어주세요"></textarea></div>
+        <button class="cf-submit" onclick="alert('상담 신청이 접수됐습니다.\\n빠르게 연락드리겠습니다!')">신청하기 →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft-logo">
+    <div class="ft-sq" style="background:#C0E0DB"></div>
+    <div class="ft-sq" style="background:#F7A7A6"></div>
+    <div class="ft-sq" style="background:#6C31D4;width:10px;height:10px;border-radius:2px"></div>
+    <div class="ft-sq" style="background:#8390CA"></div>
+    <div class="ft-sq" style="background:#C8B8F0"></div>
+  </div>
+  <div class="ft-co"><span class="bkt">[</span>${co}<span class="bkt">]</span></div>
+  ${kwTags?`<div class="kw-row">${kwTags}</div>`:''}
+  <div class="ft-copy">© ${new Date().getFullYear()} ${co}. All rights reserved.</div>
+</footer>
+
+</body>
+</html>`;
+}
+
+function launchPreview(){
+  const html = generateSite();
+  const w = window.open('', '_blank');
+  if(w){ w.document.write(html); w.document.close(); }
+  else toast('⚠️ 팝업이 차단됐습니다. 브라우저 주소창 옆 팝업 허용 후 다시 시도해주세요');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  INIT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function startForm(){
+  $('scr-start').classList.remove('on');
+  $('scr-form').classList.add('on');
+  st.cur=0;
+  renderSec(0);
+}
+</script>
+</body>
+</html>
